@@ -1,6 +1,9 @@
 import Link from "next/link";
+import { useRouter } from "next/router";
 
-export default function Sidebar({ isOpen }) {
+export default function Sidebar({ isOpen, closeSidebar }) {
+  const router = useRouter();
+
   return (
     <div
       className={`${
@@ -8,13 +11,16 @@ export default function Sidebar({ isOpen }) {
       } transform transition-transform duration-300 ease-in-out fixed flex-col w-64 bg-gray-800 h-full`}
     >
       <div className="flex items-center justify-center h-16 bg-gray-900">
-        <span className="text-white text-sm">Dashboard TPST Sinduadi</span>
+        <span className="text-white text-base">Dashboard TPST Sinduadi</span>
       </div>
       <div className="flex flex-col flex-1 overflow-y-auto">
         <nav className="flex-1 px-2 py-4 bg-gray-800">
           <Link
-            href="#"
-            className="flex items-center px-4 py-2 text-gray-100 hover:bg-gray-700"
+            onClick={closeSidebar}
+            href="/"
+            className={`flex items-center px-4 py-2 text-gray-100 hover:bg-gray-700 ${
+              router.pathname === "/" ? "bg-gray-700 shadow" : ""
+            }`}
           >
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -33,8 +39,11 @@ export default function Sidebar({ isOpen }) {
             Dashboard
           </Link>
           <Link
-            href="#"
-            className="flex items-center px-4 py-2 mt-2 text-gray-100 hover:bg-gray-700"
+            onClick={closeSidebar}
+            href="/ocr"
+            className={`flex items-center px-4 py-2 mt-2 text-gray-100 hover:bg-gray-700 ${
+              router.pathname === "/ocr" ? "bg-gray-700 shadow" : ""
+            }`}
           >
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -58,8 +67,11 @@ export default function Sidebar({ isOpen }) {
             OCR
           </Link>
           <Link
-            href="/"
-            className="flex items-center px-4 py-2 mt-2 text-gray-100 hover:bg-gray-700"
+            onClick={closeSidebar}
+            href="/weighing"
+            className={`flex items-center px-4 py-2 mt-2 text-gray-100 hover:bg-gray-700 ${
+              router.pathname === "/weighing" ? "bg-gray-700 shadow" : ""
+            }`}
           >
             <svg
               xmlns="http://www.w3.org/2000/svg"
