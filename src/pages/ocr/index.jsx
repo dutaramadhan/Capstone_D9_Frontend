@@ -1,4 +1,4 @@
-import Layout from "@/components/UI/Layout";
+import Layout from "@/components/Layout";
 
 export default function OCR() {
   return <Layout />;

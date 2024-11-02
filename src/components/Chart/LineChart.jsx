@@ -34,7 +34,6 @@ export default function LineChart({
   valueLabel,
   valueSuffix = "",
   dateKey = "date",
-  height = "400px",
   color = "rgb(37, 99, 235)",
   className = "",
 }) {
@@ -111,7 +110,6 @@ export default function LineChart({
           padding: 16,
           font: {
             size: 13,
-            weight: "500",
           },
         },
       },
@@ -132,7 +130,6 @@ export default function LineChart({
           padding: 16,
           font: {
             size: 13,
-            weight: "500",
           },
         },
       },
@@ -145,7 +142,7 @@ export default function LineChart({
         <CardTitle>{title}</CardTitle>
       </CardHeader>
       <CardContent>
-        <div style={{ height }}>
+        <div style={{ height: "100%", width: "100%", minHeight: "400px" }}>
           <Line data={chartData} options={options} />
         </div>
       </CardContent>

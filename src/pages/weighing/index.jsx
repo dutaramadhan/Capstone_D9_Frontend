@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
 import io from "socket.io-client";
-import Layout from "@/components/UI/Layout";
+import Layout from "@/components/Layout";
 
 export default function Weighing() {
   const [weight, setWeight] = useState(null);

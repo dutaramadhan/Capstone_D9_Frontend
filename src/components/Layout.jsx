@@ -1,9 +1,9 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Sidebar from "@/components/Sidebar";
 import Header from "@/components/Header";
 
 export default function Layout({ children }) {
-  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const [isSidebarOpen, setIsSidebarOpen] = useState(true);
 
   const toggleSidebar = () => {
     setIsSidebarOpen(!isSidebarOpen);
@@ -12,9 +12,21 @@ export default function Layout({ children }) {
     setIsSidebarOpen(false);
   };
 
+  useEffect(() => {
+    const handleResize = () => {
+      if (window.innerWidth > 768) {
+        setIsSidebarOpen(true);
+      } else {
+        setIsSidebarOpen(false);
+      }
+    };
+
+    handleResize();
+  }, []);
+
   return (
-    <div className="flex h-screen bg-gray-200 relative">
-      <Sidebar isOpen={isSidebarOpen} className={closeSidebar} />
+    <div className="h-screen bg-gray-200 relative">
+      <Sidebar isOpen={isSidebarOpen} closeSidebar={closeSidebar} />
       <div
         className={`flex flex-col flex-1 transition-all duration-300  ${
           isSidebarOpen ? "ml-64" : "ml-0"
