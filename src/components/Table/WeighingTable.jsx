@@ -50,7 +50,7 @@ export default function WeighingTable({ weighings }) {
               license_plate={weighing.license_plate}
               net_weight={weighing.net_weight}
               weighing_time={weighing.second_weighing_time}
-              status={weighing.status}
+              row_color={index % 2 === 0 ? "bg-gray-700" : "bg-gray-600"}
             />
           ))}
           {completedWeighings && completedWeighings.length === 0 && (
