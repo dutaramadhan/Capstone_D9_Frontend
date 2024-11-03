@@ -21,17 +21,17 @@ export default function WeighingTable({ weighings }) {
             </th>
             <th className="border-r">Supir</th>
             <th className="border-r select-none cursor-pointer">
-              <div className="flex justify-center items-center gap-2 min-w-[40px]">
+              <div className="flex justify-center items-center gap-2 min-w-[100px]">
                 Plat Nomor
               </div>
             </th>
             <th className="border-r select-none cursor-pointer">
-              <div className="flex justify-center items-center gap-2 min-w-[40px]">
-                Berat Sampah
+              <div className="flex justify-center items-center gap-2 min-w-[80px]">
+                Berat Sampah (kg)
               </div>
             </th>
             <th className="border-r select-none cursor-pointer">
-              <div className="flex justify-center items-center gap-2 min-w-[40px]">
+              <div className="flex justify-center items-center gap-2 min-w-[200px]">
                 Waktu Selesai Penimbangan
               </div>
             </th>
@@ -54,12 +54,9 @@ export default function WeighingTable({ weighings }) {
             />
           ))}
           {completedWeighings && completedWeighings.length === 0 && (
-            <tr className="border-b border-yellow">
-              <td
-                className="text-center py-5 border-r border-yellow"
-                colSpan={5}
-              >
-                This project has no weighing data yet
+            <tr className="border-b">
+              <td className="text-center py-5 border-r" colSpan={5}>
+                Belum Ada Data
               </td>
             </tr>
           )}

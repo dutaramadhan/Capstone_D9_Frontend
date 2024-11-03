@@ -81,8 +81,8 @@ export default function Home() {
           <div className="flex flex-wrap justify-between">
             <Card
               className="w-full sm:w-[48%] lg:w-[23%] m-2"
-              title={`Total Sampah 30 Hari Terakhir`}
-              id="mainCard"
+              title={`Total Sampah 30 Masuk Hari Terakhir`}
+              id="card1"
             >
               <p className="font-semibold text-3xl">{totalWaste} kg</p>
             </Card>
@@ -116,7 +116,7 @@ export default function Home() {
             valueSuffix=" (kg)"
             dateKey="date"
             color="rgb(37, 99, 235)"
-            className="mt-4 max-w-full"
+            className="mt-4 min-w-full"
           />
           <WeighingTable weighings={weighingData} />
           <div className="flex justify-between ">
@@ -130,7 +130,7 @@ export default function Home() {
               Sebelumnya
             </button>
             <span className="self-center text-medium">
-              Data {page} dari {totalPages} Data
+              Tabel {page} dari {totalPages} Tabel
             </span>
             <button
               onClick={handleNextPage}
