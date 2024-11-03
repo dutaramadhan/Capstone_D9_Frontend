@@ -80,32 +80,34 @@ export default function Home() {
         <Layout>
           <div className="flex flex-wrap justify-between">
             <Card
-              className="w-full sm:w-[48%] lg:w-[23%] m-2"
+              className="w-[45%] lg:w-[23%] m-2"
               title={`Total Sampah 30 Masuk Hari Terakhir`}
               id="card1"
             >
-              <p className="font-semibold text-3xl">{totalWaste} kg</p>
+              <p className="font-semibold text-xl lg:text-3xl">
+                {totalWaste} kg
+              </p>
             </Card>
             <Card
-              className="w-full sm:w-[48%] lg:w-[23%] m-2"
+              className="w-[45%] lg:w-[23%] m-2"
               title={`Card 2`}
               id="card2"
             >
-              <p className="font-semibold text-3xl">Data 2</p>
+              <p className="font-semibold text-xl lg:text-3xl">Data 2</p>
             </Card>
             <Card
-              className="w-full sm:w-[48%] lg:w-[23%] m-2"
+              className="w-[45%] lg:w-[23%] m-2"
               title={`Card 3`}
               id="card3"
             >
-              <p className="font-semibold text-3xl">Data 3</p>
+              <p className="font-semibold text-xl lg:text-3xl">Data 3</p>
             </Card>
             <Card
-              className="w-full sm:w-[48%] lg:w-[23%] m-2"
+              className="w-[45%] lg:w-[23%] m-2"
               title={`Card 4`}
               id="card4"
             >
-              <p className="font-semibold text-3xl">Data 4</p>
+              <p className="font-semibold text-xl lg:text-3xl">Data 4</p>
             </Card>
           </div>
           <LineChart
