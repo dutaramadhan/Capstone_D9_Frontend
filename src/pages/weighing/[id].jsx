@@ -122,7 +122,11 @@ export default function WeighingDetails() {
                 Second Weighing Time:
               </span>
               <span className="text-gray-600">
-                {new Date(weighingDetail.second_weighing_time).toLocaleString()}
+                {weighingDetail.second_weight == null
+                  ? "Tidak tersedia"
+                  : new Date(
+                      weighingDetail.second_weighing_time
+                    ).toLocaleString()}
               </span>
             </div>
             <div className="flex justify-between">
