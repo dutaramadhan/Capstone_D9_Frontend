@@ -5,6 +5,7 @@ export default function Row({
   license_plate,
   net_weight,
   weighing_time,
+  status,
   row_color,
 }) {
   const formatDateToIndonesian = (timeString) => {
@@ -41,7 +42,7 @@ export default function Row({
         <td className="text-center px-2 border-r">{license_plate}</td>
         <td className="text-center px-2 border-r">{net_weight}</td>
         <td className="text-center px-2 border-r">{formattedDateTime}</td>
-        <td className="text-center px-2 border-r">Selesai</td>
+        <td className="text-center px-2 border-r">{status}</td>
       </tr>
     </>
   );

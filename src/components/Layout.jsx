@@ -25,7 +25,7 @@ export default function Layout({ children }) {
   }, []);
 
   return (
-    <div className="h-screen bg-gray-200 relative">
+    <div className="min-h-screen min-w-screen bg-gray-200 relative">
       <Sidebar isOpen={isSidebarOpen} closeSidebar={closeSidebar} />
       <div
         className={`flex flex-col flex-1 transition-all duration-300  ${
@@ -33,7 +33,14 @@ export default function Layout({ children }) {
         }`}
       >
         <Header toggleSidebar={toggleSidebar} />
-        <main className="p-4" onClick={closeSidebar}>
+        <main
+          className="p-4"
+          onClick={() => {
+            if (window.innerWidth < 728) {
+              closeSidebar();
+            }
+          }}
+        >
           {children}
         </main>
       </div>

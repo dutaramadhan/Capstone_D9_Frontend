@@ -125,19 +125,19 @@ export default function Home() {
             <button
               onClick={handlePreviousPage}
               disabled={page === 1}
-              className={`px-4 py-2 rounded-lg text-white bg-gray-800 hover:bg-blue-700 transition duration-200 ${
+              className={`px-4 py-2 rounded-lg text-white bg-gray-800 transition duration-200 ${
                 page === 1 ? "opacity-50 cursor-not-allowed" : ""
               }`}
             >
               Sebelumnya
             </button>
             <span className="self-center text-medium">
-              Tabel {page} dari {totalPages} Tabel
+              Tabel {page} dari {totalPages}
             </span>
             <button
               onClick={handleNextPage}
               disabled={page === totalPages}
-              className={`px-4 py-2 rounded-lg text-white bg-gray-800 hover:bg-blue-700 transition duration-200 ${
+              className={`px-4 py-2 rounded-lg text-white bg-gray-800 transition duration-200 ${
                 page === totalPages ? "opacity-50 cursor-not-allowed" : ""
               }`}
             >
