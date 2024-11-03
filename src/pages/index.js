@@ -4,11 +4,15 @@ import axios from "axios";
 import Layout from "@/components/Layout";
 import LineChart from "@/components/Chart/LineChart";
 import { toast } from "react-toastify";
-import { Card } from "@/components/Dashboard/Card";
+import { Card } from "@/components/InformationCard";
+import WeighingTable from "@/components/Table/WeighingTable";
 
 export default function Home() {
   const router = useRouter();
-  const [wasteData, setWasteData] = useState([]);
+  const [weighingDataDaily, setWeighingDataDaily] = useState([]);
+  const [weighingData, setWeighingData] = useState([]);
+  const [page, setPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
 
   useEffect(() => {
     const token = localStorage.getItem("token");
@@ -18,21 +22,54 @@ export default function Home() {
   }, [router]);
 
   useEffect(() => {
-    const fetchData = async () => {
+    const fetchWeighingDataDaily = async () => {
       try {
         const response = await axios.get(
           `${process.env.NEXT_PUBLIC_API_URL}/api/weighing/total_waste`
         );
-        setWasteData(response.data.data);
+        setWeighingDataDaily(response.data.data);
       } catch (error) {
         toast.error("Error fetching data:", error);
       }
     };
 
-    fetchData();
+    fetchWeighingDataDaily();
   }, []);
 
-  const totalWaste = wasteData.reduce(
+  useEffect(() => {
+    const fetchWeighingData = async () => {
+      try {
+        const response = await axios.get(
+          `${process.env.NEXT_PUBLIC_API_URL}/api/weighing`,
+          {
+            params: {
+              page: page,
+              per_page: 10,
+            },
+          }
+        );
+        setWeighingData(response.data.data);
+        setTotalPages(response.data.pagination.total_pages);
+      } catch (error) {
+        toast.error("Error fetching data:", error);
+      }
+    };
+    fetchWeighingData();
+  }, [page]);
+
+  const handleNextPage = () => {
+    if (page < totalPages) {
+      setPage((prev) => prev + 1);
+    }
+  };
+
+  const handlePreviousPage = () => {
+    if (page > 1) {
+      setPage((prev) => prev - 1);
+    }
+  };
+
+  const totalWaste = weighingDataDaily.reduce(
     (total, item) => total + item.total_weight,
     0
   );
@@ -72,7 +109,7 @@ export default function Home() {
             </Card>
           </div>
           <LineChart
-            data={wasteData}
+            data={weighingDataDaily}
             title="Data Sampah Masuk 30 Hari Terakhir"
             valueKey="total_weight"
             valueLabel="Total Berat Sampah"
@@ -81,6 +118,30 @@ export default function Home() {
             color="rgb(37, 99, 235)"
             className="mt-4 max-w-full"
           />
+          <WeighingTable weighings={weighingData} />
+          <div className="flex justify-between ">
+            <button
+              onClick={handlePreviousPage}
+              disabled={page === 1}
+              className={`px-4 py-2 rounded-lg text-white bg-gray-800 hover:bg-blue-700 transition duration-200 ${
+                page === 1 ? "opacity-50 cursor-not-allowed" : ""
+              }`}
+            >
+              Sebelumnya
+            </button>
+            <span className="self-center text-medium">
+              Data {page} dari {totalPages} Data
+            </span>
+            <button
+              onClick={handleNextPage}
+              disabled={page === totalPages}
+              className={`px-4 py-2 rounded-lg text-white bg-gray-800 hover:bg-blue-700 transition duration-200 ${
+                page === totalPages ? "opacity-50 cursor-not-allowed" : ""
+              }`}
+            >
+              Berikutnya
+            </button>
+          </div>
         </Layout>
       </main>
     </>
