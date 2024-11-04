@@ -1,35 +1,127 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
-import io from "socket.io-client";
+import { toast } from "react-toastify";
 import Layout from "@/components/Layout";
+import { WeighingCard } from "@/components/WeighingCard";
+import { useRouter } from "next/router";
 
 export default function Weighing() {
-  const [weight, setWeight] = useState(null);
-  const [capturedData, setCapturedData] = useState([]);
-  useEffect(() => {
-    const socket = io(`${process.env.NEXT_PUBLIC_API_URL}`);
-    socket.on("weight_data", (data) => {
-      setWeight(data.weight);
-    });
+  const router = useRouter();
 
-    return () => {
-      socket.disconnect();
+  const [weighingData, setWeighingData] = useState([]);
+  const [totalPages, setTotalPages] = useState(1);
+  const [page, setPage] = useState(1);
+
+  const [filterType, setFilterType] = useState("all");
+  const [startDate, setStartDate] = useState("");
+
+  useEffect(() => {
+    const fetchWeighingData = async () => {
+      try {
+        const params = {
+          page: page,
+          per_page: 9,
+        };
+
+        if (filterType === "day" && startDate) {
+          params.start_date = startDate;
+          params.end_date = new Date(
+            new Date(startDate).setDate(new Date(startDate).getDate() + 1)
+          )
+            .toISOString()
+            .split("T")[0];
+        }
+
+        const response = await axios.get(
+          `${process.env.NEXT_PUBLIC_API_URL}/api/weighing`,
+          { params }
+        );
+        setWeighingData(response.data.data);
+        setTotalPages(response.data.pagination.total_pages);
+        console.log(response.data.pagination.total_pages);
+      } catch (error) {
+        toast.error(
+          "Error fetching data: " +
+            (error.response?.data?.message || error.message)
+        );
+      }
     };
-  }, []);
+    fetchWeighingData();
+  }, [page, filterType, startDate]);
+
+  const handleCardClick = (id) => {
+    router.push(`/weighing/${id}`);
+  };
+
+  const handleFilterChange = (e) => {
+    setFilterType(e.target.value);
+    setPage(1);
+  };
+
+  const handleStartDateChange = (e) => {
+    setStartDate(e.target.value);
+    setPage(1);
+  };
+
   return (
     <Layout>
-      <div style={{ textAlign: "center", marginTop: "100px" }}>
-        <h1>Weight Measurement Simulation</h1>
-        <div style={{ fontSize: "2rem", margin: "20px" }}>
-          Current Weight: {weight || "Loading..."} kg
+      <div className="p-2">
+        <div className="flex items-center gap-4 mb-6">
+          <select
+            value={filterType}
+            onChange={handleFilterChange}
+            className="border shadow rounded p-2"
+          >
+            <option value="all">Semua Data</option>
+            <option value="day">Hari</option>
+          </select>
+
+          {filterType === "day" && (
+            <input
+              type="date"
+              value={startDate}
+              onChange={handleStartDateChange}
+              className="border border-gray-300 rounded p-2"
+            />
+          )}
         </div>
-        {/* <button onClick={handleCapture}>Capture Weight</button>
-        {capturedData.map((data, index) => (
-          <div key={index} style={{ fontSize: "1.2rem", marginTop: "10px" }}>
-            Captured Weight: {data.weight} kg at {data.timestamp}
-          </div>
-        ))} */}
-      </div>{" "}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+          {weighingData.length > 0 ? (
+            weighingData.map((weighing) => (
+              <WeighingCard
+                key={weighing.id}
+                weighing={weighing}
+                onClick={() => handleCardClick(weighing.id)}
+              />
+            ))
+          ) : (
+            <p>Tidak ada data yang ditemukan.</p>
+          )}
+        </div>
+        <div className="flex justify-between items-center mt-6">
+          <button
+            onClick={() => setPage(page - 1)}
+            disabled={page === 1}
+            className={`px-4 py-2 rounded-lg text-white bg-gray-800 hover:bg-blue-700 transition duration-200 ${
+              page === 1 ? "opacity-50 cursor-not-allowed" : ""
+            }`}
+          >
+            Sebelumnya
+          </button>
+          <span>
+            Halaman {page} dari {totalPages}
+          </span>
+          <button
+            onClick={() => setPage(page + 1)}
+            disabled={page === totalPages}
+            className={`px-4 py-2 rounded-lg text-white bg-gray-800 hover:bg-blue-700 transition duration-200 ${
+              page === totalPages ? "opacity-50 cursor-not-allowed" : ""
+            }`}
+          >
+            Berikutnya
+          </button>
+        </div>
+      </div>
     </Layout>
   );
 }
