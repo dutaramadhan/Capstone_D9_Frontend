@@ -15,6 +15,9 @@ export function WeighingCard({ weighing, onClick }) {
   const formatDateToIndonesian = (timeString) => {
     const date = new Date(timeString);
 
+    const jakartaOffset = 7 * 60 * 60 * 1000;
+    const adjustedDate = new Date(date.getTime() - jakartaOffset);
+
     const optionsDate = {
       weekday: "long",
       year: "numeric",
@@ -29,8 +32,8 @@ export function WeighingCard({ weighing, onClick }) {
       hour12: false,
     };
 
-    const formattedDate = date.toLocaleDateString("id-ID", optionsDate);
-    const formattedTime = date.toLocaleTimeString("en-US", optionsTime);
+    const formattedDate = adjustedDate.toLocaleDateString("id-ID", optionsDate);
+    const formattedTime = adjustedDate.toLocaleTimeString("en-US", optionsTime);
 
     return `${formattedDate} ${formattedTime}`;
   };

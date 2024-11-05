@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/router";
 import axios from "axios";
+import { io } from "socket.io-client";
 import Layout from "@/components/Layout";
 import LineChart from "@/components/Chart/LineChart";
 import { toast } from "react-toastify";
@@ -13,13 +14,37 @@ export default function Home() {
   const [weighingData, setWeighingData] = useState([]);
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
+  const [temperature1, setTemperature1] = useState(null);
+  const [temperature2, setTemperature2] = useState(null);
+  const [humidity1, setHumidity1] = useState();
+  const [humidity2, setHumidity2] = useState();
 
-  // useEffect(() => {
-  //   const token = localStorage.getItem("token");
-  //   if (!token) {
-  //     router.push("/auth/login");
-  //   }
-  // }, [router]);
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+    if (!token) {
+      router.push("/auth/login");
+    }
+  }, [router]);
+
+  useEffect(() => {
+    const ws = new WebSocket(`${process.env.NEXT_PUBLIC_ESP2_URL}`);
+
+    ws.onopen = function () {
+      console.log("Connected to [SECOND] ESP32 WebSocket");
+    };
+
+    ws.onmessage = function (event) {
+      const data = JSON.parse(event.data);
+      setTemperature1(data.temperature1);
+      setHumidity1(data.humidity1);
+      setTemperature2(data.temperature2);
+      setHumidity2(data.humidity2);
+    };
+
+    ws.onclose = function () {
+      console.log("Disconnected from [SECOND] ESP32 WebSocket");
+    };
+  }, []);
 
   useEffect(() => {
     const fetchWeighingDataDaily = async () => {
@@ -90,10 +115,35 @@ export default function Home() {
             </Card>
             <Card
               className="w-[45%] lg:w-[23%] m-2"
-              title={`Card 2`}
+              title={`Temperatur 1`}
               id="card2"
             >
-              <p className="font-semibold text-xl lg:text-3xl">Data 2</p>
+              <p className="font-semibold text-xl lg:text-3xl">
+                {temperature1}
+              </p>
+            </Card>
+            <Card
+              className="w-[45%] lg:w-[23%] m-2"
+              title={`Humidity 1`}
+              id="card5"
+            >
+              <p className="font-semibold text-xl lg:text-3xl">{humidity1}</p>
+            </Card>
+            <Card
+              className="w-[45%] lg:w-[23%] m-2"
+              title={`Temperatur 2`}
+              id="card6"
+            >
+              <p className="font-semibold text-xl lg:text-3xl">
+                {temperature2}
+              </p>
+            </Card>
+            <Card
+              className="w-[45%] lg:w-[23%] m-2"
+              title={`Humidity 2`}
+              id="card7"
+            >
+              <p className="font-semibold text-xl lg:text-3xl">{humidity2}</p>
             </Card>
             <Card
               className="w-[45%] lg:w-[23%] m-2"

@@ -4,6 +4,7 @@ import { toast } from "react-toastify";
 import Layout from "@/components/Layout";
 import { WeighingCard } from "@/components/WeighingCard";
 import { useRouter } from "next/router";
+import Loading from "@/components/Loading";
 
 export default function Weighing() {
   const router = useRouter();
@@ -14,13 +15,15 @@ export default function Weighing() {
 
   const [filterType, setFilterType] = useState("all");
   const [startDate, setStartDate] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
     const fetchWeighingData = async () => {
       try {
+        setIsLoading(true);
         const params = {
           page: page,
-          per_page: 9,
+          per_page: 12,
         };
 
         if (filterType === "day" && startDate) {
@@ -40,12 +43,16 @@ export default function Weighing() {
         setTotalPages(response.data.pagination.total_pages);
         console.log(response.data.pagination.total_pages);
       } catch (error) {
+        setWeighingData([]);
         toast.error(
           "Error fetching data: " +
             (error.response?.data?.message || error.message)
         );
+      } finally {
+        setIsLoading(false);
       }
     };
+
     fetchWeighingData();
   }, [page, filterType, startDate]);
 
@@ -65,6 +72,7 @@ export default function Weighing() {
 
   return (
     <Layout>
+      {isLoading && <Loading />}
       <div className="p-2">
         <div className="flex items-center gap-4 mb-6">
           <select
