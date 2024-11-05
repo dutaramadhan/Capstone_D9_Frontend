@@ -1,10 +1,15 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/router";
 import axios from "axios";
+
 import Layout from "@/components/Layout";
+
 import LineChart from "@/components/Chart/LineChart";
+import ReadingsChart from "@/components/Chart/ReadingsChart";
+
 import { toast } from "react-toastify";
 import { Card } from "@/components/InformationCard";
+
 import WeighingTable from "@/components/Table/WeighingTable";
 
 export default function Home() {
@@ -14,12 +19,13 @@ export default function Home() {
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
 
-  // useEffect(() => {
-  //   const token = localStorage.getItem("token");
-  //   if (!token) {
-  //     router.push("/auth/login");
-  //   }
-  // }, [router]);
+  // data for reading's chart
+  const [ readingsData, setReadingsData ] = useState({
+    dates: [],
+    categories: [],
+    series: {}
+  })
+
 
   useEffect(() => {
     const fetchWeighingDataDaily = async () => {
@@ -32,6 +38,34 @@ export default function Home() {
         toast.error("Error fetching data:", error);
       }
     };
+
+    // fetch readings data
+    (async () => {
+      try {
+        const thisYear = (new Date()).getFullYear()
+        const response = await fetch(`${process.env.NEXT_PUBLIC_PHP_API}/readings.php?tps_id=1&from=${thisYear}-01-01&to=${thisYear}-12-31`)
+        let result = await response.json()
+
+        if (!Array.isArray(result)) result = [result]
+        else result = result.reverse()
+        
+        let temp = { dates: [], categories: [], series: {} }
+
+        temp.dates = result.map(data => data.date.split("-").reverse().join("-"))
+        delete result[0].id
+        delete result[0].tps_id
+        delete result[0].date_added
+        delete result[0].date
+        for (const category in result[0])
+          temp.series[category.toUpperCase().replace(/_/g, ' ')] = result.map(data => Number(data[category]))
+        temp.categories = Object.keys(temp.series)
+
+        setReadingsData(temp)
+
+      } catch (error) {
+        toast.error("Error fetching data:", error);
+      }
+    })()
 
     fetchWeighingDataDaily();
   }, []);
@@ -144,6 +178,9 @@ export default function Home() {
               Berikutnya
             </button>
           </div>
+          
+          <ReadingsChart data={readingsData} />
+
         </Layout>
       </main>
     </>
