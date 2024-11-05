@@ -9,7 +9,7 @@ import LineChart from "@/components/Chart/LineChart";
 import ReadingsChart from "@/components/Chart/ReadingsChart";
 
 import { toast } from "react-toastify";
-import { Card } from "@/components/InformationCard";
+import { Card } from "@/components/Card";
 
 import WeighingTable from "@/components/Table/WeighingTable";
 
@@ -21,11 +21,11 @@ export default function Home() {
   const [totalPages, setTotalPages] = useState(1);
 
   // data for reading's chart
-  const [ readingsData, setReadingsData ] = useState({
+  const [readingsData, setReadingsData] = useState({
     dates: [],
     categories: [],
-    series: {}
-  })
+    series: {},
+  });
 
   const [temperature1, setTemperature1] = useState(null);
   const [temperature2, setTemperature2] = useState(null);
@@ -74,30 +74,35 @@ export default function Home() {
     // fetch readings data
     (async () => {
       try {
-        const thisYear = (new Date()).getFullYear()
-        const response = await fetch(`${process.env.NEXT_PUBLIC_PHP_API}/readings.php?tps_id=1&from=${thisYear}-01-01&to=${thisYear}-12-31`)
-        let result = await response.json()
+        const thisYear = new Date().getFullYear();
+        const response = await fetch(
+          `${process.env.NEXT_PUBLIC_PHP_API}/readings.php?tps_id=1&from=${thisYear}-01-01&to=${thisYear}-12-31`
+        );
+        let result = await response.json();
 
-        if (!Array.isArray(result)) result = [result]
-        else result = result.reverse()
-        
-        let temp = { dates: [], categories: [], series: {} }
+        if (!Array.isArray(result)) result = [result];
+        else result = result.reverse();
 
-        temp.dates = result.map(data => data.date.split("-").reverse().join("-"))
-        delete result[0].id
-        delete result[0].tps_id
-        delete result[0].date_added
-        delete result[0].date
+        let temp = { dates: [], categories: [], series: {} };
+
+        temp.dates = result.map((data) =>
+          data.date.split("-").reverse().join("-")
+        );
+        delete result[0].id;
+        delete result[0].tps_id;
+        delete result[0].date_added;
+        delete result[0].date;
         for (const category in result[0])
-          temp.series[category.toUpperCase().replace(/_/g, ' ')] = result.map(data => Number(data[category]))
-        temp.categories = Object.keys(temp.series)
+          temp.series[category.toUpperCase().replace(/_/g, " ")] = result.map(
+            (data) => Number(data[category])
+          );
+        temp.categories = Object.keys(temp.series);
 
-        setReadingsData(temp)
-
+        setReadingsData(temp);
       } catch (error) {
         toast.error("Error fetching data:", error);
       }
-    })()
+    })();
 
     fetchWeighingDataDaily();
   }, []);
@@ -211,33 +216,37 @@ export default function Home() {
             color="rgb(37, 99, 235)"
             className="mt-4 min-w-full"
           />
-          <WeighingTable weighings={weighingData} />
-          <div className="flex justify-between ">
-            <button
-              onClick={handlePreviousPage}
-              disabled={page === 1}
-              className={`px-4 py-2 rounded-lg text-white bg-gray-800 transition duration-200 ${
-                page === 1 ? "opacity-50 cursor-not-allowed" : ""
-              }`}
-            >
-              Sebelumnya
-            </button>
-            <span className="self-center text-medium">
-              Tabel {page} dari {totalPages}
-            </span>
-            <button
-              onClick={handleNextPage}
-              disabled={page === totalPages}
-              className={`px-4 py-2 rounded-lg text-white bg-gray-800 transition duration-200 ${
-                page === totalPages ? "opacity-50 cursor-not-allowed" : ""
-              }`}
-            >
-              Berikutnya
-            </button>
-          </div>
-          
+          <Card
+            className="w-full mt-6"
+            title={`Tabel Sampah Masuk`}
+            id="card-table"
+          >
+            <WeighingTable weighings={weighingData} />
+            <div className="flex justify-between ">
+              <button
+                onClick={handlePreviousPage}
+                disabled={page === 1}
+                className={`px-4 py-2 rounded-lg text-white bg-gray-800 transition duration-200 ${
+                  page === 1 ? "opacity-50 cursor-not-allowed" : ""
+                }`}
+              >
+                Sebelumnya
+              </button>
+              <span className="self-center text-medium">
+                Tabel {page} dari {totalPages}
+              </span>
+              <button
+                onClick={handleNextPage}
+                disabled={page === totalPages}
+                className={`px-4 py-2 rounded-lg text-white bg-gray-800 transition duration-200 ${
+                  page === totalPages ? "opacity-50 cursor-not-allowed" : ""
+                }`}
+              >
+                Berikutnya
+              </button>
+            </div>
+          </Card>
           <ReadingsChart data={readingsData} />
-
         </Layout>
       </main>
     </>
