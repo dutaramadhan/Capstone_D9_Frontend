@@ -70,7 +70,7 @@ export function WeighingCard({ weighing, onClick }) {
         </p>
         <p className="text-sm font-medium">
           <span className="font-bold">Berat Sampah:</span>{" "}
-          {net_weight == null ? "Belum Ditimbang" : net_weight + " kg"}
+          {net_weight == null ? "Belum Selesai Ditimbang" : net_weight + " kg"}
         </p>
         <p className="text-sm font-medium">
           <span className="font-bold">Status:</span>{" "}

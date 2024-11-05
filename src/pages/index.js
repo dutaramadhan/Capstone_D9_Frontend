@@ -156,7 +156,7 @@ export default function Home() {
               id="card1"
             >
               <p className="font-semibold text-xl lg:text-3xl">
-                {totalWaste} kg
+                {totalWaste.toFixed(3)} kg
               </p>
             </Card>
             <Card

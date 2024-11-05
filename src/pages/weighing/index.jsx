@@ -1,10 +1,12 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
 import { toast } from "react-toastify";
+import { useRouter } from "next/router";
+
 import Layout from "@/components/Layout";
 import { WeighingCard } from "@/components/WeighingCard";
-import { useRouter } from "next/router";
 import Loading from "@/components/Loading";
+import AddButton from "@/components/AddButton";
 
 export default function Weighing() {
   const router = useRouter();
@@ -130,6 +132,7 @@ export default function Weighing() {
           </button>
         </div>
       </div>
+      <AddButton />
     </Layout>
   );
 }
