@@ -1,7 +1,9 @@
-export default function CategoryTable({ table, className }) {
+export default function CategoryTable({ table, setTable, className }) {
 
-    const dates = table[0]
-    const data  = table.slice(1)
+    // table and setTable is a state 
+
+    const dates = table[0].slice() // copy
+    const data  = table.slice(1).map(row => row.slice()) // copy
     const ROW_NAME = [
         'PLASTIK HD',
         'PLASTIK PP',
@@ -45,8 +47,21 @@ export default function CategoryTable({ table, className }) {
         'BK'
     ]
 
-    const thProps = { className: "border py-1 px-3 whitespace-nowrap" }
-    const tdProps = { className: "border py-1 px-3" }
+    const thProps = { className: "border p-1 whitespace-nowrap" }
+    const tdProps = { className: "border p-1" }
+
+    const handleChange = event => {
+        //i, j, newValue
+        const i = Number(event.target.getAttribute('data-row'))
+        const j = Number(event.target.getAttribute('data-col'))
+        setTable(prevTable =>
+            prevTable.map((row, rowIndex) =>
+            rowIndex === i
+                ? row.map((cell, colIndex) => (colIndex === j ? { ...cell, value: event.target.value } : cell))
+                : row.slice()
+            )
+        )
+    }
 
     return (
         <div className={`w-full overflow-x-auto mt-6 sm:mb-0 pb-5 ${className}`}>
@@ -63,7 +78,16 @@ export default function CategoryTable({ table, className }) {
                     <tr>
                         {   // render tanggal
                             dates.map((dateString, i) => ( 
-                                <th {...thProps}key={`date_${i}`}>{dateString.value}</th>
+                                <th {...thProps} key={`date_${i}`}>
+                                    <input 
+                                        className="bg-gray-800 max-w-24 text-center"
+                                        data-row={0}
+                                        data-col={i}
+                                        key={`0-${i}`}
+                                        value={table[0][i].value}
+                                        onChange={handleChange}
+                                        type="text" />
+                                </th>
                             ))
                         }
                     </tr>
@@ -75,7 +99,16 @@ export default function CategoryTable({ table, className }) {
                                 <th {...thProps} key={`label_${ROW_NAME[i]}`}>{ROW_NAME[i]}</th>
                                 {
                                     row.map((cell, j) => (
-                                        <td {...tdProps} key={`data_${i}_${j}`}>{cell.value}</td>
+                                        <td {...tdProps} key={`data_${i}_${j}`}>
+                                            <input 
+                                                className="bg-gray-50 max-w-24 text-center"
+                                                data-row={i+1}
+                                                data-col={j}
+                                                key={`${i+1}-${j}`}
+                                                value={table[i+1][j].value}
+                                                onChange={handleChange}
+                                                type="number" />
+                                        </td>
                                     ))
                                 }
                             </tr>

@@ -31,6 +31,7 @@ export default function OCR() {
         ],
         document: {}
     })
+    const [table, setTable] = useState([])
 
     const [imagePreview, setImagePreview] = useState(false)
     const imagePreviewRef = useRef(null)
@@ -124,6 +125,7 @@ export default function OCR() {
 
                 const parser = new Parser(result)
                 setParseResult(parser.parse())
+                setTable(parser.parseResult.table.map(row => row.slice().map(cell => cell.value === null ? { ...cell, value: '' } : { ...cell })))
 
                 setFlowState(FLOW.IMAGE_ANNOTATED)
             } catch (error) {
@@ -150,16 +152,38 @@ export default function OCR() {
     const handleSendData = async () => {
         setFlowState(FLOW.LOADING_SEND_DATA)
 
-        const requestBody = parseResult.document.map(column => {
-            const record = {}
-            record.tps_id = 1 // sementara
-            record.date = column.date.value.split('/').reverse().join('-')
-            for (const key in column.readings) record[key.toLowerCase().replace(/[\/ ]/g, '_')] = column.readings[key].isValid ? column.readings[key].value : null
-            return record
-        })
+        const fieldNames = ['date', 'plastik_hd', 'plastik_pp', 'putihan', 'ember_warna', 'ember_hitam', 'ps_kaca', 'bodong_kotor', 'bodong_bersih', 'paralon', 'nilex', 'sepatu', 'duplek', 'arsip', 'kardus', 'jadel', 'besi_a', 'besi_b', 'kabin_rosok', 'kaleng', 'alumunium', 'sari', 'tembaga', 'kabel_isi', 'bagur_karung', 'beling_botol', 'botol_abc', 'botol_ot', 'botol_kecap', 'gepengan', 'mika_pc', 'multi_layer', 'pp_sablon', 'pet', 'kaleng_gas', 'kuningan', 'kerasan', 'bok', 'karpet_mantel', 'nium_tipis', 'bk']
+        const nRow = table.length
+        const nCol = table[0].length
+        const isValidDate = dateString => {
+            const [day, month, year] = dateString.split('/').map(Number)
+            const date = new Date(year, month - 1, day)
+            return (
+                /^\d{2}\/\d{2}\/\d{4}$/.test(dateString) && 
+                date.getDate() === day &&
+                date.getMonth() === month - 1 &&
+                date.getFullYear() === year
+            )
+        }
+
+        const requestBody = []
+        for (let colIndex = 0; colIndex < nCol; colIndex++) {
+            if (isValidDate(table[0][colIndex].value)) {
+
+                const record = { date: table[0][colIndex].value.split('/').reverse().join('-') }
+                for (let rowIndex = 1; rowIndex < nRow; rowIndex++) {
+             
+                    const parsedRow = Number(table[rowIndex][colIndex].value)
+                    record[fieldNames[rowIndex]] = parsedRow > 0 ? parsedRow : null 
+                    
+                }
+                requestBody.push(record)
+                
+            }
+            
+        }
 
         console.log(requestBody)
-
         try {
             console.log('sending...')
             const response = await fetch(`${process.env.NEXT_PUBLIC_PHP_API}/readings.php`, {
@@ -219,22 +243,31 @@ export default function OCR() {
                         </svg>
                         Deteksi Tabel Pendataan Sampah            
                     </button>
-                    <button 
-                        className={`text-white w-full p-2 rounded-xl mt-2 flex items-center justify-center ${flowState === FLOW.LOADING_ANNOTATION ? 'bg-gray-500' : 'bg-gray-800 hover:bg-gray-900'} ${FLOW.IMAGE_ANNOTATED <= flowState &&  flowState <= FLOW.LOADING_SEND_DATA ? '' : 'hidden'}`}
-                        onClick={handleSendData}
-                        disabled={flowState === FLOW.LOADING_ANNOTATION}>
-                        <svg className="mr-2" width="25px" height="25px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                            <path d="M17 17H17.01M15.6 14H18C18.9319 14 19.3978 14 19.7654 14.1522C20.2554 14.3552 20.6448 14.7446 20.8478 15.2346C21 15.6022 21 16.0681 21 17C21 17.9319 21 18.3978 20.8478 18.7654C20.6448 19.2554 20.2554 19.6448 19.7654 19.8478C19.3978 20 18.9319 20 18 20H6C5.06812 20 4.60218 20 4.23463 19.8478C3.74458 19.6448 3.35523 19.2554 3.15224 18.7654C3 18.3978 3 17.9319 3 17C3 16.0681 3 15.6022 3.15224 15.2346C3.35523 14.7446 3.74458 14.3552 4.23463 14.1522C4.60218 14 5.06812 14 6 14H8.4M12 15V4M12 4L15 7M12 4L9 7" stroke="#FFFFFF" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                        </svg>
-                        Unggah Data Pendataan Sampah             
-                    </button>
+                    {
+                        flowState >= FLOW.IMAGE_ANNOTATED
+                        ? <button 
+                            className={`text-white w-full p-2 rounded-xl mt-2 flex items-center justify-center ${flowState === FLOW.LOADING_ANNOTATION ? 'bg-gray-500' : 'bg-gray-800 hover:bg-gray-900'} ${FLOW.IMAGE_ANNOTATED <= flowState &&  flowState <= FLOW.LOADING_SEND_DATA ? '' : 'hidden'}`}
+                            onClick={handleSendData}
+                            disabled={flowState === FLOW.LOADING_ANNOTATION}>
+                            <svg className="mr-2" width="25px" height="25px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M17 17H17.01M15.6 14H18C18.9319 14 19.3978 14 19.7654 14.1522C20.2554 14.3552 20.6448 14.7446 20.8478 15.2346C21 15.6022 21 16.0681 21 17C21 17.9319 21 18.3978 20.8478 18.7654C20.6448 19.2554 20.2554 19.6448 19.7654 19.8478C19.3978 20 18.9319 20 18 20H6C5.06812 20 4.60218 20 4.23463 19.8478C3.74458 19.6448 3.35523 19.2554 3.15224 18.7654C3 18.3978 3 17.9319 3 17C3 16.0681 3 15.6022 3.15224 15.2346C3.35523 14.7446 3.74458 14.3552 4.23463 14.1522C4.60218 14 5.06812 14 6 14H8.4M12 15V4M12 4L15 7M12 4L9 7" stroke="#FFFFFF" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                            </svg>
+                            Unggah Data Pendataan Sampah             
+                        </button>
+                        : null
+                    }
                 </div>
             </Card>
             <Card className={`mt-4 flex flex-col align-center justify-center text-center pt-6 ${flowState >=  FLOW.LOADING_ANNOTATION ? '' : 'hidden'}`}>
                 <p className={`${flowState ===  FLOW.LOADING_ANNOTATION ? '' : 'hidden'}`}>
                     Memproses Deteksi Tabel Pendataan Sampah...
                 </p>
-                <CategoryTable table={parseResult.table} className={flowState >= FLOW.IMAGE_ANNOTATED ? '' : 'hidden'} />
+                {
+                    flowState >= FLOW.IMAGE_ANNOTATED
+                    ? <CategoryTable table={table} setTable={setTable} />
+                    : null
+                }
+                
                 
             </Card>
             <Modal isOpen={flowState > FLOW.LOADING_SEND_DATA}>

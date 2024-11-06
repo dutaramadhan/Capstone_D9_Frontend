@@ -78,7 +78,9 @@ export default class Parser
         this.scanTable()
 
         // parse the data
-        return this.parseScanResult()
+        this.parseResult = this.parseScanResult()
+
+        return this.parseResult
     }
 
     
@@ -117,9 +119,6 @@ export default class Parser
          * 
          */
 
-        function transformToNumbers(input) {
-            return input.replace(/[SsGgOoIlBZ]/g, char => mappings[char] || char);
-        }
         const letterToNum = { 
             'S': '5', 
             's': '5', 
@@ -138,8 +137,8 @@ export default class Parser
             const parsedValue = parseInt(numString, 10)
             
             return !isNaN(parsedValue) && cell.texts.symbols.trim() === parsedValue.toString()
-                ? { value: parsedValue, isValid: true }
-                : { value: cell.texts.symbols, isValid: false }
+                ? { value: parsedValue, isEmpty: false, isValid: true }
+                : { value: cell.texts.symbols, isEmpty: Boolean(cell.texts.symbols), isValid: false }
         }
         const evalDate = cell => {
             const parts = cell.texts.symbols.replace(/\s+/g, '').split('/');
