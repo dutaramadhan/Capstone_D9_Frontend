@@ -151,16 +151,16 @@ export default function Home() {
         <Layout>
           <div className="flex flex-wrap justify-between">
             <Card
-              className="w-[45%] lg:w-[23%] m-2"
+              className="w-[45%] lg:w-[30%] m-2"
               title={`Total Sampah 30 Masuk Hari Terakhir`}
               id="card1"
             >
               <p className="font-semibold text-xl lg:text-3xl">
-                {totalWaste.toFixed(3)} kg
+                {totalWaste.toFixed(2)} kg
               </p>
             </Card>
             <Card
-              className="w-[45%] lg:w-[23%] m-2"
+              className="w-[45%] lg:w-[30%] m-2"
               title={`Temperatur 1`}
               id="card2"
             >
@@ -169,14 +169,14 @@ export default function Home() {
               </p>
             </Card>
             <Card
-              className="w-[45%] lg:w-[23%] m-2"
-              title={`Humidity 1`}
+              className="w-[45%] lg:w-[30%] m-2"
+              title={`Kelembaban 1`}
               id="card5"
             >
               <p className="font-semibold text-xl lg:text-3xl">{humidity1}</p>
             </Card>
             <Card
-              className="w-[45%] lg:w-[23%] m-2"
+              className="w-[45%] lg:w-[30%] m-2"
               title={`Temperatur 2`}
               id="card6"
             >
@@ -185,30 +185,23 @@ export default function Home() {
               </p>
             </Card>
             <Card
-              className="w-[45%] lg:w-[23%] m-2"
-              title={`Humidity 2`}
+              className="w-[45%] lg:w-[30%] m-2"
+              title={`Kelembaban 2`}
               id="card7"
             >
               <p className="font-semibold text-xl lg:text-3xl">{humidity2}</p>
             </Card>
             <Card
-              className="w-[45%] lg:w-[23%] m-2"
-              title={`Card 3`}
-              id="card3"
+              className="w-[45%] lg:w-[30%] m-2"
+              title={`Humidity 2`}
+              id="card7"
             >
-              <p className="font-semibold text-xl lg:text-3xl">Data 3</p>
-            </Card>
-            <Card
-              className="w-[45%] lg:w-[23%] m-2"
-              title={`Card 4`}
-              id="card4"
-            >
-              <p className="font-semibold text-xl lg:text-3xl">Data 4</p>
+              <p className="font-semibold text-xl lg:text-3xl">{humidity2}</p>
             </Card>
           </div>
           <LineChart
             data={weighingDataDaily}
-            title="Data Sampah Masuk 30 Hari Terakhir"
+            title="Grafik Data Sampah Masuk 30 Hari Terakhir"
             valueKey="total_weight"
             valueLabel="Total Berat Sampah"
             valueSuffix=" (kg)"
@@ -218,7 +211,7 @@ export default function Home() {
           />
           <Card
             className="w-full mt-6"
-            title={`Tabel Sampah Masuk`}
+            title={`Data Sampah Masuk`}
             id="card-table"
           >
             <WeighingTable weighings={weighingData} />
@@ -226,19 +219,19 @@ export default function Home() {
               <button
                 onClick={handlePreviousPage}
                 disabled={page === 1}
-                className={`px-4 py-2 rounded-lg text-white bg-gray-800 transition duration-200 ${
+                className={`px-4 py-2 rounded-lg text-white bg-gray-800 transition duration-200 text-sm lg:text-base font-medium ${
                   page === 1 ? "opacity-50 cursor-not-allowed" : ""
                 }`}
               >
                 Sebelumnya
               </button>
-              <span className="self-center text-medium">
+              <span className="self-center text-sm lg:text-base">
                 Tabel {page} dari {totalPages}
               </span>
               <button
                 onClick={handleNextPage}
                 disabled={page === totalPages}
-                className={`px-4 py-2 rounded-lg text-white bg-gray-800 transition duration-200 ${
+                className={`px-4 py-2 rounded-lg text-white bg-gray-800 transition duration-200 text-sm lg:text-base ${
                   page === totalPages ? "opacity-50 cursor-not-allowed" : ""
                 }`}
               >

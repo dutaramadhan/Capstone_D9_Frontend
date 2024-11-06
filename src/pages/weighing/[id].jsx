@@ -12,13 +12,6 @@ import {
 } from "react-icons/fa";
 import { io } from "socket.io-client";
 
-const LoadingSpinner = () => (
-  <div className="flex items-center justify-center h-full">
-    <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-green-500"></div>
-    <span className="ml-4 text-white">Loading...</span>
-  </div>
-);
-
 export default function WeighingDetails() {
   const router = useRouter();
   const { id } = router.query;
@@ -26,6 +19,8 @@ export default function WeighingDetails() {
   const [loading, setLoading] = useState(true);
   const [secondWeight, setSecondWeight] = useState(null);
   const [isDataFetched, setIsDataFetched] = useState(false);
+  const [isFetchWeight, setIsFetchWeight] = useState(true);
+  const [isFetchRepeat, setIsFetchRepeat] = useState(false);
 
   useEffect(() => {
     const fetchWeighingDetail = async () => {
@@ -49,23 +44,25 @@ export default function WeighingDetails() {
     };
 
     fetchWeighingDetail();
-  }, [id]);
+  }, [id, isFetchRepeat]);
 
   useEffect(() => {
-    if (isDataFetched) {
-      if (secondWeight == null) {
-        const socket = io(`${process.env.NEXT_PUBLIC_API_URL}`);
+    if (
+      isDataFetched &&
+      weighingDetail.second_weight == null &&
+      isFetchWeight
+    ) {
+      const socket = io(`${process.env.NEXT_PUBLIC_API_URL}`);
 
-        socket.on("weight_data", (data) => {
-          setSecondWeight(data.weight);
-        });
+      socket.on("weight_data", (data) => {
+        setSecondWeight(data.weight);
+      });
 
-        return () => {
-          socket.disconnect();
-        };
-      }
+      return () => {
+        socket.disconnect();
+      };
     }
-  }, [id, isDataFetched]);
+  }, [id, isDataFetched, isFetchWeight]);
 
   const ConfirmationToast = ({ message, onConfirm, onCancel }) => (
     <div className="text-center">
@@ -92,7 +89,7 @@ export default function WeighingDetails() {
       toast.warn("Data Berat Belum Tersedia");
       return;
     }
-
+    setIsFetchWeight(false);
     const toastId = toast(
       <ConfirmationToast
         message={`Apakah Berat ${secondWeight} Sudah Sesuai?`}
@@ -102,7 +99,7 @@ export default function WeighingDetails() {
               `${process.env.NEXT_PUBLIC_API_URL}/api/weighing/${id}`,
               { second_weight: secondWeight }
             );
-            router.push("/weighing");
+            setIsFetchRepeat(true);
             toast.success("Data Berat Sudah Tersimpan");
           } catch (error) {
             toast.error(
@@ -112,7 +109,10 @@ export default function WeighingDetails() {
           }
           toast.dismiss(toastId);
         }}
-        onCancel={() => toast.dismiss(toastId)}
+        onCancel={() => {
+          setIsFetchWeight(true);
+          toast.dismiss(toastId);
+        }}
       />,
       {
         position: "top-center",
@@ -145,7 +145,7 @@ export default function WeighingDetails() {
               `${process.env.NEXT_PUBLIC_API_URL}/api/weighing/${id}`
             );
             router.push("/weighing");
-            toast.success("Data Berat Sudah Terhapus");
+            toast.success("Data Berhasil Terhapus");
           } catch (error) {
             toast.error(
               "Gagal Menghapus Data " +
@@ -165,10 +165,6 @@ export default function WeighingDetails() {
       }
     );
   };
-
-  if (loading) {
-    return <LoadingSpinner />;
-  }
 
   if (!weighingDetail) {
     return (
@@ -337,7 +333,11 @@ export default function WeighingDetails() {
           <div className="text-center mt-6 space-x-2">
             <button
               onClick={handlePrint}
-              className="flex items-center justify-center ml-2 px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition duration-300 shadow-lg"
+              className={`flex items-center justify-center ml-2 px-6 py-3 text-white rounded-lg transition duration-300 shadow-lg ${
+                weighingDetail.second_weight
+                  ? "bg-blue-600 hover:bg-blue-700"
+                  : "bg-gray-200 hover:bg-gray-300 pointer-events-none"
+              }`}
             >
               <FaFilePdf className="mr-2" /> Print Nota
             </button>

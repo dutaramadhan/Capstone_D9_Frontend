@@ -1,10 +1,62 @@
-import { useState } from "react";
-import WeighingRow from "@/components/Table/WeighingRow";
+function Row({
+  index,
+  supplier,
+  driver,
+  license_plate,
+  net_weight,
+  weighing_time,
+  status,
+  row_color,
+}) {
+  const formatDateToIndonesian = (timeString) => {
+    const date = new Date(timeString);
+
+    const jakartaOffset = 7 * 60 * 60 * 1000;
+    const adjustedDate = new Date(date.getTime() - jakartaOffset);
+
+    const optionsDate = {
+      weekday: "long",
+      year: "numeric",
+      month: "long",
+      day: "numeric",
+      timeZone: "Asia/Jakarta",
+    };
+    const optionsTime = {
+      timeZone: "Asia/Jakarta",
+      hour: "2-digit",
+      minute: "2-digit",
+      hour12: false,
+    };
+
+    const formattedDate = adjustedDate.toLocaleDateString("id-ID", optionsDate);
+    const formattedTime = adjustedDate.toLocaleTimeString("en-US", optionsTime);
+
+    return `${formattedDate} ${formattedTime}`;
+  };
+
+  return (
+    <>
+      <tr className={`mb-2 text-sm lg:text-base ${row_color}`}>
+        <td className="text-center px-2 border-r">{index + 1}</td>
+        <td className="text-center px-2 border-r">{supplier}</td>
+        <td className="text-center px-2 border-r">{driver}</td>
+        <td className="text-center px-2 border-r">{license_plate}</td>
+        <td className="text-center px-2 border-r">
+          {net_weight ? net_weight : "-"}
+        </td>
+        <td className="text-center px-2 border-r">
+          {weighing_time ? formatDateToIndonesian(weighing_time) : "-"}
+        </td>
+        <td className="text-center px-2 border-r">{status}</td>
+      </tr>
+    </>
+  );
+}
 
 export default function WeighingTable({ weighings }) {
   return (
-    <div className="w-full overflow-x-auto mt-6 sm:mb-0 pb-5">
-      <table className="w-full sm:min-w-fit bg-gray-800 text-white">
+    <div className="w-full overflow-x-auto sm:mb-0 pb-5">
+      <table className="w-full sm:min-w-fit bg-gray-800 text-white text-sm lg:text-base">
         <tbody>
           <tr className="border-b">
             <th className="text-center py-2 border-r border-yellow min-w-[5px]">
@@ -38,7 +90,7 @@ export default function WeighingTable({ weighings }) {
             </th>
           </tr>
           {weighings?.map((weighing, index) => (
-            <WeighingRow
+            <Row
               key={weighing.id}
               index={index}
               supplier={weighing.supplier}
