@@ -5,24 +5,24 @@ import Parser from "@/utils/Parser";
 
 import Layout from "@/components/Layout";
 import CategoryTable from "@/components/Table/CategoryTable";
-import { Card } from "@/components/InformationCard";
+import { Card } from "@/components/Card";
 import Modal from "@/components/Modal";
 
 export default function OCR() {
-    const imageRef = useRef(null)
-    const canvasRef = useRef(null)
+  const imageRef = useRef(null);
+  const canvasRef = useRef(null);
 
-    const FLOW = {
-        INITIAL: 0,
-        IMAGE_INPUT: 1,
-        LOADING_PREPROCESSING: 2,
-        IMAGE_PREPROCESSED: 3,
-        LOADING_ANNOTATION: 4,
-        IMAGE_ANNOTATED: 5,
-        LOADING_SEND_DATA: 6,
-        SEND_DATA_SUCCESS: 7,
-        SEND_DATA_ERROR: 8,
-    }
+  const FLOW = {
+    INITIAL: 0,
+    IMAGE_INPUT: 1,
+    LOADING_PREPROCESSING: 2,
+    IMAGE_PREPROCESSED: 3,
+    LOADING_ANNOTATION: 4,
+    IMAGE_ANNOTATED: 5,
+    LOADING_SEND_DATA: 6,
+    SEND_DATA_SUCCESS: 7,
+    SEND_DATA_ERROR: 8,
+  };
 
     const [flowState, setFlowState] = useState(FLOW.INITIAL)
     const [parseResult, setParseResult] = useState({
@@ -36,105 +36,108 @@ export default function OCR() {
     const [imagePreview, setImagePreview] = useState(false)
     const imagePreviewRef = useRef(null)
 
-    /**
-     * read the input from files and append it to imageRef.current
-     * @param {Event} e 
-     */
-    const handleImageInput = e => {
-        const file = e.target.files[0]
-        if (file) {
-            imageRef.current.src = URL.createObjectURL(file)
-            setFlowState(FLOW.IMAGE_INPUT)
-        }
+  /**
+   * read the input from files and append it to imageRef.current
+   * @param {Event} e
+   */
+  const handleImageInput = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      imageRef.current.src = URL.createObjectURL(file);
+      setFlowState(FLOW.IMAGE_INPUT);
     }
+  };
 
-    /**
-     * read image from imageRef.current, write result to canvasRef.current
-     * flow goes from LOADING_PREPROCESSING to IMAGE_PREPROCESSED
-     * update: also write into imagePreviewRef
-     */
-    const handleImageProcessing = () => {
-        setFlowState(FLOW.LOADING_PREPROCESSING)
+  /**
+   * read image from imageRef.current, write result to canvasRef.current
+   * flow goes from LOADING_PREPROCESSING to IMAGE_PREPROCESSED
+   * update: also write into imagePreviewRef
+   */
+  const handleImageProcessing = () => {
+    setFlowState(FLOW.LOADING_PREPROCESSING);
 
-        if (!imageRef.current || !canvasRef.current || !imagePreviewRef.current) return
+    if (!imageRef.current || !canvasRef.current || !imagePreviewRef.current)
+      return;
 
-        console.log('preprocessing images...')
-        const src = cv.imread(imageRef.current)
-        const gray = new cv.Mat()
-        const enhanced = new cv.Mat()
+    console.log("preprocessing images...");
+    const src = cv.imread(imageRef.current);
+    const gray = new cv.Mat();
+    const enhanced = new cv.Mat();
 
-        // Step 1: Convert to Grayscale
-        cv.cvtColor(src, gray, cv.COLOR_RGBA2GRAY)
+    // Step 1: Convert to Grayscale
+    cv.cvtColor(src, gray, cv.COLOR_RGBA2GRAY);
 
-        // Step 2: Enhance with CLAHE (Contrast Limited Adaptive Histogram Equalization)
-        const clahe = new cv.CLAHE(2.0, new cv.Size(8, 8))
-        clahe.apply(gray, enhanced)
+    // Step 2: Enhance with CLAHE (Contrast Limited Adaptive Histogram Equalization)
+    const clahe = new cv.CLAHE(2.0, new cv.Size(8, 8));
+    clahe.apply(gray, enhanced);
 
-        // Step 3: Apply Sharpening
-        const kernel = cv.Mat.eye(3, 3, cv.CV_32F)
-        kernel.data32F[0] = 0; kernel.data32F[1] = -1; kernel.data32F[2] = 0
-        kernel.data32F[3] = -1; kernel.data32F[4] = 5; kernel.data32F[5] = -1
-        kernel.data32F[6] = 0; kernel.data32F[7] = -1; kernel.data32F[8] = 0
+    // Step 3: Apply Sharpening
+    const kernel = cv.Mat.eye(3, 3, cv.CV_32F);
+    kernel.data32F[0] = 0;
+    kernel.data32F[1] = -1;
+    kernel.data32F[2] = 0;
+    kernel.data32F[3] = -1;
+    kernel.data32F[4] = 5;
+    kernel.data32F[5] = -1;
+    kernel.data32F[6] = 0;
+    kernel.data32F[7] = -1;
+    kernel.data32F[8] = 0;
 
-        const sharpened = new cv.Mat()
-        cv.filter2D(enhanced, sharpened, cv.CV_8U, kernel)
+    const sharpened = new cv.Mat();
+    cv.filter2D(enhanced, sharpened, cv.CV_8U, kernel);
 
-        // Display the final result
-        cv.imshow(canvasRef.current, sharpened)
-        cv.imshow(imagePreviewRef.current, sharpened)
+    // Display the final result
+    cv.imshow(canvasRef.current, sharpened);
+    cv.imshow(imagePreviewRef.current, sharpened);
 
-        // Free memory
-        src.delete()
-        gray.delete()
-        enhanced.delete()
-        kernel.delete()
-        sharpened.delete()
+    // Free memory
+    src.delete();
+    gray.delete();
+    enhanced.delete();
+    kernel.delete();
+    sharpened.delete();
 
-        setFlowState(FLOW.IMAGE_PREPROCESSED)
+    setFlowState(FLOW.IMAGE_PREPROCESSED);
+  };
 
-    }
+  /**
+   * read image from canvasRef.current, send to process.env.NEXT_PUBLIC_OCR_API
+   * method: POST, as in <input type="file" name="image" />
+   * if succes, flow goes from LOADING_ANNOTATION to IMAGE_ANNOTATED
+   * (todo: error handling?)
+   * data stored in parseResult state
+   */
+  const handleOCR = () => {
+    if (!canvasRef.current) return;
+    setFlowState(FLOW.LOADING_ANNOTATION);
 
-    /**
-     * read image from canvasRef.current, send to process.env.NEXT_PUBLIC_OCR_API
-     * method: POST, as in <input type="file" name="image" />
-     * if succes, flow goes from LOADING_ANNOTATION to IMAGE_ANNOTATED
-     * (todo: error handling?)
-     * data stored in parseResult state
-     */
-    const handleOCR = () => {
-        if (!canvasRef.current) return
-        setFlowState(FLOW.LOADING_ANNOTATION)
+    console.log("annotating images...");
+    canvasRef.current.toBlob(async (blob) => {
+      // Create a FormData object to hold the canvas image
+      const formData = new FormData();
+      formData.append("image", blob, "preprocessed.png"); // Set a filename for the blob
 
-        console.log('annotating images...')
-        canvasRef.current.toBlob(async blob => {
+      try {
+        // Send a POST request to the PHP API
+        const response = await fetch(process.env.NEXT_PUBLIC_OCR_API, {
+          method: "POST",
+          body: formData,
+        });
 
-            // Create a FormData object to hold the canvas image
-            const formData = new FormData()
-            formData.append('image', blob, 'preprocessed.png') // Set a filename for the blob
-
-            try {
-                // Send a POST request to the PHP API
-                const response = await fetch(process.env.NEXT_PUBLIC_OCR_API, {
-                    method: 'POST',
-                    body: formData
-                })
-
-                // Handle the response
-                const result = await response.json()
-                console.log(result)
+        // Handle the response
+        const result = await response.json();
+        console.log(result);
 
                 const parser = new Parser(result)
                 setParseResult(parser.parse())
                 setTable(parser.parseResult.table.map(row => row.slice().map(cell => cell.value === null ? { ...cell, value: '' } : { ...cell })))
 
-                setFlowState(FLOW.IMAGE_ANNOTATED)
-            } catch (error) {
-                console.error('Error:', error)
-            }
-
-        }, 'image/png')
-
-    }
+        setFlowState(FLOW.IMAGE_ANNOTATED);
+      } catch (error) {
+        console.error("Error:", error);
+      }
+    }, "image/png");
+  };
 
     /**
      * convert parseResult.document into 
@@ -197,25 +200,33 @@ export default function OCR() {
             const result = await response.json()
             console.log(result) // Log response from PHP (e.g., success message)
 
-            if (result.status === 'success') setFlowState(FLOW.SEND_DATA_SUCCESS)
-            else throw new Error(result)
-        } catch (error) {
-            console.error("Error sending data:", error)
-            setFlowState(FLOW.SEND_DATA_ERROR)
-        }
+      if (result.status === "success") setFlowState(FLOW.SEND_DATA_SUCCESS);
+      else throw new Error(result);
+    } catch (error) {
+      console.error("Error sending data:", error);
+      setFlowState(FLOW.SEND_DATA_ERROR);
     }
+  };
 
-    return (
-        <Layout>
-
-            {/* hidden elements */}
-            <img ref={imageRef} alt="Preview"
-                className='hidden'
-                onLoad={handleImageProcessing} />
-            <input type="file" id="cameraInput" accept="image/*" capture="environment" name="image"
-                className="hidden"
-                onChange={handleImageInput}
-                disabled={flowState >= FLOW.LOADING_ANNOTATION} />
+  return (
+    <Layout>
+      {/* hidden elements */}
+      <img
+        ref={imageRef}
+        alt="Preview"
+        className="hidden"
+        onLoad={handleImageProcessing}
+      />
+      <input
+        type="file"
+        id="cameraInput"
+        accept="image/*"
+        capture="environment"
+        name="image"
+        className="hidden"
+        onChange={handleImageInput}
+        disabled={flowState >= FLOW.LOADING_ANNOTATION}
+      />
 
             <Card title="Pendataan Komposisi Sampah dengan Kamera">
                 <div className={`w-full lg:h-60 flex flex-col lg:flex-row`}>
@@ -279,16 +290,21 @@ export default function OCR() {
             </Modal>
 
 
-            {/* modal for image previewing */}
-            <Modal isOpen={imagePreview} closeButton={true} onClose={() => setImagePreview(false)} >
-                <canvas 
-                    style={{
-                        maxHeight: 'calc(90vh - 2rem)',
-                        maxWidth: 'calc(90vw - 2rem)',
-                    }} className="object-contain" ref={imagePreviewRef}>
-                </canvas>
-            </Modal>
-
-        </Layout>
-    );
+      {/* modal for image previewing */}
+      <Modal
+        isOpen={imagePreview}
+        closeButton={true}
+        onClose={() => setImagePreview(false)}
+      >
+        <canvas
+          style={{
+            maxHeight: "calc(90vh - 2rem)",
+            maxWidth: "calc(90vw - 2rem)",
+          }}
+          className="object-contain"
+          ref={imagePreviewRef}
+        ></canvas>
+      </Modal>
+    </Layout>
+  );
 }

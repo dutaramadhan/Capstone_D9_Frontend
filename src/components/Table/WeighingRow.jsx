@@ -11,6 +11,9 @@ export default function Row({
   const formatDateToIndonesian = (timeString) => {
     const date = new Date(timeString);
 
+    const jakartaOffset = 7 * 60 * 60 * 1000;
+    const adjustedDate = new Date(date.getTime() - jakartaOffset);
+
     const optionsDate = {
       weekday: "long",
       year: "numeric",
@@ -25,13 +28,11 @@ export default function Row({
       hour12: false,
     };
 
-    const formattedDate = date.toLocaleDateString("id-ID", optionsDate);
-    const formattedTime = date.toLocaleTimeString("en-US", optionsTime);
+    const formattedDate = adjustedDate.toLocaleDateString("id-ID", optionsDate);
+    const formattedTime = adjustedDate.toLocaleTimeString("en-US", optionsTime);
 
     return `${formattedDate} ${formattedTime}`;
   };
-
-  const formattedDateTime = formatDateToIndonesian(weighing_time);
 
   return (
     <>
@@ -40,8 +41,12 @@ export default function Row({
         <td className="text-center px-2 border-r">{supplier}</td>
         <td className="text-center px-2 border-r">{driver}</td>
         <td className="text-center px-2 border-r">{license_plate}</td>
-        <td className="text-center px-2 border-r">{net_weight}</td>
-        <td className="text-center px-2 border-r">{formattedDateTime}</td>
+        <td className="text-center px-2 border-r">
+          {net_weight ? net_weight : "-"}
+        </td>
+        <td className="text-center px-2 border-r">
+          {weighing_time ? formatDateToIndonesian(weighing_time) : "-"}
+        </td>
         <td className="text-center px-2 border-r">{status}</td>
       </tr>
     </>
