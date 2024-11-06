@@ -7,7 +7,6 @@ export function Card({ className, title, children, icon: Icon, ...props }) {
       {title && (
         <div className="flex items-center space-x-2 p-4">
           {Icon && <Icon className="w-6 h-6 text-gray-500" />}{" "}
-          {/* Display icon if provided */}
           <h3 className="text-sm lg:text-lg font-medium leading-none tracking-tight">
             {title}
           </h3>

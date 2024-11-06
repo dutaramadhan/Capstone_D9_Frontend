@@ -1,5 +1,6 @@
 import React from "react";
-import { CheckCircleIcon, ExclamationCircleIcon } from "@heroicons/react/solid";
+import { FaCircleExclamation } from "react-icons/fa6";
+import { FaCheckCircle } from "react-icons/fa";
 
 export function WeighingCard({ weighing, onClick }) {
   const {
@@ -40,7 +41,7 @@ export function WeighingCard({ weighing, onClick }) {
 
   const cardColor =
     status === "completed" ? "border-green-500" : "border-red-500";
-  const Icon = status === "completed" ? CheckCircleIcon : ExclamationCircleIcon;
+  const Icon = status === "completed" ? FaCheckCircle : FaCircleExclamation;
 
   return (
     <div

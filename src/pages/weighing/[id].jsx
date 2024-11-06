@@ -1,4 +1,6 @@
 import Layout from "@/components/Layout";
+import ConfirmationToast from "@/components/ConfirmationToast";
+
 import { useState, useEffect } from "react";
 import axios from "axios";
 import { useRouter } from "next/router";
@@ -63,26 +65,6 @@ export default function WeighingDetails() {
       };
     }
   }, [id, isDataFetched, isFetchWeight]);
-
-  const ConfirmationToast = ({ message, onConfirm, onCancel }) => (
-    <div className="text-center">
-      <p className="mb-4 text-lg font-medium">{message}</p>
-      <div className="flex justify-center space-x-4">
-        <button
-          className="px-4 py-2 bg-green-500 text-white rounded"
-          onClick={onConfirm}
-        >
-          Yakin
-        </button>
-        <button
-          className="px-4 py-2 bg-red-500 text-white rounded"
-          onClick={onCancel}
-        >
-          Batal
-        </button>
-      </div>
-    </div>
-  );
 
   const handleCaptureWeight = () => {
     if (!secondWeight) {
@@ -332,11 +314,15 @@ export default function WeighingDetails() {
           </div>
           <div className="text-center mt-6 space-x-2">
             <button
-              onClick={handlePrint}
+              onClick={
+                weighingDetail.second_weight
+                  ? handlePrint
+                  : (e) => e.preventDefault()
+              }
               className={`flex items-center justify-center ml-2 px-6 py-3 text-white rounded-lg transition duration-300 shadow-lg ${
                 weighingDetail.second_weight
                   ? "bg-blue-600 hover:bg-blue-700"
-                  : "bg-gray-200 hover:bg-gray-300 pointer-events-none"
+                  : "bg-gray-200 hover:bg-gray-300 cursor-not-allowed"
               }`}
             >
               <FaFilePdf className="mr-2" /> Print Nota

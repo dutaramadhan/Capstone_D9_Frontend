@@ -6,7 +6,6 @@ function Row({
   net_weight,
   weighing_time,
   status,
-  row_color,
 }) {
   const formatDateToIndonesian = (timeString) => {
     const date = new Date(timeString);
@@ -36,7 +35,9 @@ function Row({
 
   return (
     <>
-      <tr className={`mb-2 text-sm lg:text-base ${row_color}`}>
+      <tr
+        className={`text-gray-900 mb-2 text-sm lg:text-base bg-gray-50 border p-1`}
+      >
         <td className="text-center px-2 border-r">{index + 1}</td>
         <td className="text-center px-2 border-r">{supplier}</td>
         <td className="text-center px-2 border-r">{driver}</td>
@@ -99,7 +100,6 @@ export default function WeighingTable({ weighings }) {
               net_weight={weighing.net_weight}
               weighing_time={weighing.second_weighing_time}
               status={weighing.status === "completed" ? "Selesai" : "Draft"}
-              row_color={index % 2 === 0 ? "bg-gray-700" : "bg-gray-600"}
             />
           ))}
           {weighings && weighings.length === 0 && (

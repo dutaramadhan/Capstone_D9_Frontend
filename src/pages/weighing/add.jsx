@@ -1,4 +1,6 @@
 import Layout from "@/components/Layout";
+import ConfirmationToast from "@/components/ConfirmationToast";
+
 import { useState, useEffect } from "react";
 import axios from "axios";
 import { useRouter } from "next/router";
@@ -29,26 +31,6 @@ export default function AddWeighing() {
       };
     }
   }, [isFetchedData]);
-
-  const ConfirmationToast = ({ onConfirm, onCancel, message }) => (
-    <div className="text-center">
-      <p className="mb-4 text-lg font-medium">{message}</p>
-      <div className="flex justify-center space-x-4">
-        <button
-          className="px-4 py-2 bg-green-500 text-white rounded-lg shadow-md hover:bg-green-600 transition duration-200"
-          onClick={onConfirm}
-        >
-          Yakin
-        </button>
-        <button
-          className="px-4 py-2 bg-red-500 text-white rounded-lg shadow-md hover:bg-red-600 transition duration-200"
-          onClick={onCancel}
-        >
-          Batal
-        </button>
-      </div>
-    </div>
-  );
 
   const handleCaptureWeight = () => {
     if (!firstWeight) {

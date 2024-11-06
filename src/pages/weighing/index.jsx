@@ -112,7 +112,7 @@ export default function Weighing() {
           <button
             onClick={() => setPage(page - 1)}
             disabled={page === 1}
-            className={`px-4 py-2 rounded-lg text-white bg-gray-800 hover:bg-blue-700 transition duration-200 text-sm lg:text-base ${
+            className={`px-4 py-2 rounded-lg text-white bg-gray-800 transition duration-200 text-sm lg:text-base ${
               page === 1 ? "opacity-50 cursor-not-allowed" : ""
             }`}
           >
@@ -124,7 +124,7 @@ export default function Weighing() {
           <button
             onClick={() => setPage(page + 1)}
             disabled={page === totalPages}
-            className={`px-4 py-2 rounded-lg text-white bg-gray-800 hover:bg-blue-700 transition duration-200 text-sm lg:text-base ${
+            className={`px-4 py-2 rounded-lg text-white bg-gray-800 transition duration-200 text-sm lg:text-base ${
               page === totalPages ? "opacity-50 cursor-not-allowed" : ""
             }`}
           >

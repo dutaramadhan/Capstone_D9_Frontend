@@ -2,6 +2,8 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/router";
 import axios from "axios";
 import { io } from "socket.io-client";
+import { FaTemperatureFull, FaWeightHanging } from "react-icons/fa6";
+import { WiHumidity } from "react-icons/wi";
 
 import Layout from "@/components/Layout";
 
@@ -152,51 +154,75 @@ export default function Home() {
           <div className="flex flex-wrap justify-between">
             <Card
               className="w-[45%] lg:w-[30%] m-2"
-              title={`Total Sampah 30 Masuk Hari Terakhir`}
-              id="card1"
+              title={`Total Sampah Masuk 30 Hari Terakhir`}
+              id="weight"
             >
-              <p className="font-semibold text-xl lg:text-3xl">
-                {totalWaste.toFixed(2)} kg
-              </p>
+              <span className="flex">
+                <FaWeightHanging className="mr-2 text-indigo-600 text-base lg:text-3xl" />
+                <p className="font-semibold text-base lg:text-3xl ml-1">
+                  {totalWaste.toFixed(1)} kg
+                </p>
+              </span>
             </Card>
             <Card
               className="w-[45%] lg:w-[30%] m-2"
               title={`Temperatur 1`}
               id="card2"
             >
-              <p className="font-semibold text-xl lg:text-3xl">
-                {temperature1}
-              </p>
+              <span className="flex">
+                <FaTemperatureFull className="mr-2 text-red-600 text-base lg:text-3xl" />
+                <p className="font-semibold text-base lg:text-3xl ml-1">
+                  {temperature1}
+                </p>
+              </span>
             </Card>
             <Card
               className="w-[45%] lg:w-[30%] m-2"
               title={`Kelembaban 1`}
               id="card5"
             >
-              <p className="font-semibold text-xl lg:text-3xl">{humidity1}</p>
+              <span className="flex">
+                <WiHumidity className="mr-2 text-blue-600 text-base lg:text-3xl" />
+                <p className="ffont-semibold text-base lg:text-3xl ml-1">
+                  {humidity1}
+                </p>
+              </span>
             </Card>
             <Card
               className="w-[45%] lg:w-[30%] m-2"
               title={`Temperatur 2`}
               id="card6"
             >
-              <p className="font-semibold text-xl lg:text-3xl">
-                {temperature2}
-              </p>
+              <span className="flex">
+                <FaTemperatureFull className="mr-2 text-red-600 text-base lg:text-3xl" />
+                <p className="font-semibold text-base lg:text-3xl ml-1">
+                  {temperature2}
+                </p>
+              </span>
             </Card>
             <Card
               className="w-[45%] lg:w-[30%] m-2"
               title={`Kelembaban 2`}
               id="card7"
             >
-              <p className="font-semibold text-xl lg:text-3xl">{humidity2}</p>
+              <span className="flex">
+                <WiHumidity className="mr-2 text-blue-600 text-base lg:text-3xl" />
+                <p className="font-semibold text-base lg:text-3xl ml-1">
+                  {humidity2}
+                </p>
+              </span>
             </Card>
             <Card
               className="w-[45%] lg:w-[30%] m-2"
               title={`Humidity 2`}
               id="card7"
             >
-              <p className="font-semibold text-xl lg:text-3xl">{humidity2}</p>
+              <span className="flex">
+                <WiHumidity className="mr-2 text-blue-600 text-base lg:text-3xl" />
+                <p className="font-semibold text-base lg:text-3xl ml-1">
+                  {humidity2}
+                </p>
+              </span>
             </Card>
           </div>
           <LineChart
