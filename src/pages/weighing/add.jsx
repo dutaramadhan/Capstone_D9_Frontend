@@ -135,7 +135,7 @@ export default function AddWeighing() {
                 Supir
               </span>
               <input
-                className="ml-8 w-full md:w-[30%] focus:outline-none px-4 py-2 rounded-lg shadow bg-gray-400 placeholder:text-gray-800"
+                className="ml-8 w-full md:w-[30%] focus:outline-none px-4 py-2 rounded-lg shadow bg-gray-200 placeholder:text-gray-800"
                 onChange={(e) => setDriverName(e.target.value)}
                 value={driverName}
                 placeholder="Masukkan Nama Supir"
@@ -146,7 +146,7 @@ export default function AddWeighing() {
                 Supplier
               </span>
               <input
-                className="ml-8 w-full md:w-[30%] focus:outline-none px-4 py-2 rounded-lg shadow bg-gray-400 placeholder:text-gray-800"
+                className="ml-8 w-full md:w-[30%] focus:outline-none px-4 py-2 rounded-lg shadow bg-gray-200 placeholder:text-gray-800"
                 onChange={(e) => setSupplier(e.target.value)}
                 value={supplier}
                 placeholder="Masukkan Nama Supplier"
@@ -157,7 +157,7 @@ export default function AddWeighing() {
                 Plat Nomor
               </span>
               <input
-                className="ml-8 w-full md:w-[30%] focus:outline-none px-4 py-2 rounded-lg shadow bg-gray-400 placeholder:text-gray-800"
+                className="ml-8 w-full md:w-[30%] focus:outline-none px-4 py-2 rounded-lg shadow bg-gray-200 placeholder:text-gray-800"
                 onChange={(e) => setLicensePlate(e.target.value)}
                 value={licensePlate}
                 placeholder="Masukkan Plat Nomor"
@@ -168,7 +168,7 @@ export default function AddWeighing() {
                 Catatan
               </span>
               <input
-                className="ml-8 w-full md:w-[30%] focus:outline-none px-4 py-2 rounded-lg shadow bg-gray-400 placeholder:text-gray-800"
+                className="ml-8 w-full md:w-[30%] focus:outline-none px-4 py-2 rounded-lg shadow bg-gray-200 placeholder:text-gray-800"
                 onChange={(e) => setNote(e.target.value)}
                 value={note}
                 placeholder="Masukkan Catatan"
