@@ -36,14 +36,14 @@ function Row({
   return (
     <>
       <tr
-        className={`text-gray-900 mb-2 text-sm lg:text-base bg-gray-50 border p-1`}
+        className={`text-gray-900 mb-2 text-sm lg:text-base bg-white border p-1`}
       >
         <td className="text-center px-2 border-r">{index + 1}</td>
         <td className="text-center px-2 border-r">{supplier}</td>
         <td className="text-center px-2 border-r">{driver}</td>
         <td className="text-center px-2 border-r">{license_plate}</td>
         <td className="text-center px-2 border-r">
-          {net_weight ? net_weight : "-"}
+          {net_weight ? net_weight.toFixed(2) : "-"}
         </td>
         <td className="text-center px-2 border-r">
           {weighing_time ? formatDateToIndonesian(weighing_time) : "-"}

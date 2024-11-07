@@ -54,17 +54,40 @@ export default function WeighingDetails() {
       weighingDetail.second_weight == null &&
       isFetchWeight
     ) {
-      const socket = io(`${process.env.NEXT_PUBLIC_API_URL}`);
+      const ws = new WebSocket(`${process.env.NEXT_PUBLIC_ESP1_URL}`);
 
-      socket.on("weight_data", (data) => {
+      ws.onopen = () => console.log("Connected to [FIRST] ESP32 WebSocket");
+      ws.onmessage = (event) => {
+        const data = JSON.parse(event.data);
         setSecondWeight(data.weight);
-      });
+      };
+      ws.onclose = () =>
+        console.log("Disconnected from [FIRST] ESP32 WebSocket");
 
       return () => {
-        socket.disconnect();
+        ws.close();
+        console.log("WebSocket cleaned up");
       };
     }
-  }, [id, isDataFetched, isFetchWeight]);
+  }, [isDataFetched, secondWeight, isFetchWeight]);
+
+  // useEffect(() => {
+  //   if (
+  //     isDataFetched &&
+  //     weighingDetail.second_weight == null &&
+  //     isFetchWeight
+  //   ) {
+  //     const socket = io(`${process.env.NEXT_PUBLIC_API_URL}`);
+
+  //     socket.on("weight_data", (data) => {
+  //       setSecondWeight(data.weight);
+  //     });
+
+  //     return () => {
+  //       socket.disconnect();
+  //     };
+  //   }
+  // }, [id, isDataFetched, isFetchWeight]);
 
   const handleCaptureWeight = () => {
     if (!secondWeight) {
@@ -185,77 +208,83 @@ export default function WeighingDetails() {
         <h1 className="text-4xl font-bold mb-6 text-center text-white">
           Data Timbangan
         </h1>
-        <div className="bg-gray-700 rounded-lg p-6 shadow-lg shadow-inner">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div className="bg-gray-50 rounded-lg p-6 shadow-lg shadow-inner">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-gray-800">
             <div className="space-y-4">
-              <div className="flex justify-between items-center p-4 bg-gray-600 rounded-lg shadow-sm transition duration-200 hover:shadow-md">
-                <span className="font-semibold text-gray-300 capitalize flex items-center">
+              <div className="flex justify-between items-center p-4 bg-gray-300 rounded-lg shadow-sm transition duration-200 hover:shadow-lg">
+                <span className="font-semibold capitalize flex items-center">
                   Supir
                 </span>
-                <span className="text-gray-200 flex items-center">
+                <span className="flex items-center">
                   {weighingDetail.driver_name}
                 </span>
               </div>
-              <div className="flex justify-between items-center p-4 bg-gray-600 rounded-lg shadow-sm transition duration-200 hover:shadow-md">
-                <span className="font-semibold text-gray-300 capitalize flex items-center">
+              <div className="flex justify-between items-center p-4 bg-gray-300 rounded-lg shadow-sm transition duration-200 hover:shadow-lg">
+                <span className="font-semibold capitalize flex items-center">
                   Supplier
                 </span>
-                <span className="text-gray-200 flex items-center">
+                <span className="flex items-center">
                   {weighingDetail.supplier}
                 </span>
               </div>
-              <div className="flex justify-between items-center p-4 bg-gray-600 rounded-lg shadow-sm transition duration-200 hover:shadow-md">
-                <span className="font-semibold text-gray-300 capitalize flex items-center">
+              <div className="flex justify-between items-center p-4 bg-gray-300 rounded-lg shadow-sm transition duration-200 hover:shadow-lg">
+                <span className="font-semibold capitalize flex items-center">
                   Plat Nomor
                 </span>
-                <span className="text-gray-200 flex items-center">
+                <span className="flex items-center">
                   {weighingDetail.license_plate}
                 </span>
               </div>
-              <div className="flex justify-between items-center p-4 bg-gray-600 rounded-lg shadow-sm transition duration-200 hover:shadow-md">
-                <span className="font-semibold text-gray-300 capitalize flex items-center">
+              <div className="flex justify-between items-center p-4 bg-gray-300 rounded-lg shadow-sm transition duration-200 hover:shadow-lg">
+                <span className="font-semibold capitalize flex items-center">
                   Catatan
                 </span>
-                <span className="text-gray-200 flex items-center">
+                <span className="flex items-center">
                   {weighingDetail.notes}
                 </span>
               </div>
-              <div className="flex justify-between items-center p-4 bg-gray-600 rounded-lg shadow-sm transition duration-200 hover:shadow-md">
-                <span className="font-medium text-gray-300 flex items-center">
+              <div className="flex justify-between items-center p-4 bg-gray-300 rounded-lg shadow-sm transition duration-200 hover:shadow-lg">
+                <span className="font-semibold capitalize flex items-center">
                   {weighingDetail.status === "completed" ? (
-                    <FaCheckCircle className="mr-2 text-green-400" />
+                    <FaCheckCircle className="mr-2 text-green-600" />
                   ) : (
                     <FaTimes className="mr-2 text-red-400" />
                   )}
                   Status:
                 </span>
-                <span className="text-gray-200 font-semibold">
+                <span
+                  className={`font-semibold ${
+                    weighingDetail.status === "completed"
+                      ? "text-green-600"
+                      : "text-red-400"
+                  }`}
+                >
                   {weighingDetail.status === "completed" ? "Selesai" : "Draft"}
                 </span>
               </div>
             </div>
             <div className="space-y-4">
-              <div className="flex justify-between items-center p-4 bg-gray-600 rounded-lg shadow-sm transition duration-200 hover:shadow-md">
-                <span className="font-semibold text-gray-300 capitalize flex items-center">
+              <div className="flex justify-between items-center p-4 bg-gray-300 rounded-lg shadow-sm transition duration-200 hover:shadow-lg">
+                <span className="font-semibold capitalize flex items-center">
                   Berat Penimbangan Pertama
                 </span>
-                <span className="text-gray-200 flex items-center">
+                <span className="flex items-center">
                   {weighingDetail.first_weight + " kg"}
                 </span>
               </div>
-              <div className="flex justify-between items-center p-4 bg-gray-600 rounded-lg shadow-sm transition duration-200 hover:shadow-md">
-                <span className="font-semibold text-gray-300 capitalize flex items-center">
+              <div className="flex justify-between items-center p-4 bg-gray-300 rounded-lg shadow-sm transition duration-200 hover:shadow-lg">
+                <span className="font-semibold capitalize flex items-center">
                   Waktu Penimbangan Pertama
                 </span>
-                <span className="text-gray-200 flex items-center">
+                <span className="flex items-center">
                   {formatDateToIndonesian(weighingDetail.first_weighing_time)}
                 </span>
               </div>
-              <div className="flex justify-between items-center p-4 bg-gray-600 rounded-lg shadow-sm transition duration-200 hover:shadow-md">
-                <span className="font-semibold text-gray-300 capitalize flex items-center">
+              <div className="flex justify-between items-center p-4 bg-gray-300 rounded-lg shadow-sm transition duration-200 hover:shadow-lg">
+                <span className="font-semibold capitalize flex items-center">
                   Berat Penimbangan Kedua
                 </span>
-                <span className="text-gray-200 flex items-center">
+                <span className="flex items-center">
                   {weighingDetail.second_weight ? (
                     weighingDetail.second_weight + " kg"
                   ) : (
@@ -275,15 +304,13 @@ export default function WeighingDetails() {
                   )}
                 </span>
               </div>
-              <div className="flex justify-between items-center p-4 bg-gray-600 rounded-lg shadow-sm transition duration-200 hover:shadow-md">
-                <span className="font-semibold text-gray-300 capitalize flex items-center">
+              <div className="flex justify-between items-center p-4 bg-gray-300 rounded-lg shadow-sm transition duration-200 hover:shadow-lg">
+                <span className="font-semibold capitalize flex items-center">
                   Waktu Penimbangan Kedua
                 </span>
                 <span
                   className={`flex items-center ${
-                    weighingDetail.second_weighing_time
-                      ? "text-gray-200"
-                      : "text-red-400"
+                    weighingDetail.second_weighing_time ? "" : "text-red-400"
                   }`}
                 >
                   {weighingDetail.second_weighing_time
@@ -293,16 +320,14 @@ export default function WeighingDetails() {
                     : "Penimbangan Kedua Belum Dilakukan"}
                 </span>
               </div>
-              <div className="flex justify-between items-center p-4 bg-gray-600 rounded-lg shadow-sm transition duration-200 hover:shadow-md">
-                <span className="font-semibold text-gray-300 capitalize flex items-center">
+              <div className="flex justify-between items-center p-4 bg-gray-300 rounded-lg shadow-sm transition duration-200 hover:shadow-lg">
+                <span className="font-semibold capitalize flex items-center">
                   <FaWeightHanging className="mr-2 text-indigo-400" />
                   Berat Bersih Sampah
                 </span>
                 <span
                   className={`flex items-center ${
-                    weighingDetail.status === "completed"
-                      ? "text-gray-200"
-                      : "text-red-400"
+                    weighingDetail.status === "completed" ? "" : "text-red-400"
                   }`}
                 >
                   {weighingDetail.net_weight
@@ -322,7 +347,7 @@ export default function WeighingDetails() {
               className={`flex items-center justify-center ml-2 px-6 py-3 text-white rounded-lg transition duration-300 shadow-lg ${
                 weighingDetail.second_weight
                   ? "bg-blue-600 hover:bg-blue-700"
-                  : "bg-gray-200 hover:bg-gray-300 cursor-not-allowed"
+                  : "bg-blue-200 hover:bg-blue-300 cursor-not-allowed"
               }`}
             >
               <FaFilePdf className="mr-2" /> Print Nota

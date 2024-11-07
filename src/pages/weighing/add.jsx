@@ -9,7 +9,6 @@ import { io } from "socket.io-client";
 
 export default function AddWeighing() {
   const router = useRouter();
-  const { id } = router.query;
   const [loading, setLoading] = useState(true);
   const [isFetchedData, setIsFetchedData] = useState(true);
   const [firstWeight, setFirstWeight] = useState(null);
@@ -18,16 +17,35 @@ export default function AddWeighing() {
   const [licensePlate, setLicensePlate] = useState("");
   const [note, setNote] = useState("");
 
+  // useEffect(() => {
+  //   if (isFetchedData) {
+  //     const socket = io(`${process.env.NEXT_PUBLIC_API_URL}`);
+
+  //     socket.on("weight_data", (data) => {
+  //       setFirstWeight(data.weight);
+  //     });
+
+  //     return () => {
+  //       socket.disconnect();
+  //     };
+  //   }
+  // }, [isFetchedData]);
+
   useEffect(() => {
     if (isFetchedData) {
-      const socket = io(`${process.env.NEXT_PUBLIC_API_URL}`);
+      const ws = new WebSocket(`${process.env.NEXT_PUBLIC_ESP1_URL}`);
 
-      socket.on("weight_data", (data) => {
+      ws.onopen = () => console.log("Connected to [FIRST] ESP32 WebSocket");
+      ws.onmessage = (event) => {
+        const data = JSON.parse(event.data);
         setFirstWeight(data.weight);
-      });
+      };
+      ws.onclose = () =>
+        console.log("Disconnected from [FIRST] ESP32 WebSocket");
 
       return () => {
-        socket.disconnect();
+        ws.close();
+        console.log("WebSocket cleaned up");
       };
     }
   }, [isFetchedData]);
@@ -110,49 +128,57 @@ export default function AddWeighing() {
         <h1 className="text-4xl font-bold mb-6 text-center text-white">
           Data Timbangan
         </h1>
-        <div className="bg-gray-700 rounded-lg p-6 shadow-lg shadow-inner">
-          <div className="grid grid-cols-1 gap-4">
-            <div className="flex justify-between items-center p-4 bg-gray-600 rounded-lg shadow-sm transition duration-200 hover:shadow-md">
-              <span className="font-semibold text-gray-300">Supir</span>
+        <div className="bg-gray-50 rounded-lg p-6 shadow-lg shadow-inner">
+          <div className="grid grid-cols-1 gap-4 text-gray-800">
+            <div className="flex justify-between items-center pl-4 p-2 bg-gray-300 rounded-lg shadow-sm transition duration-200 hover:shadow-md">
+              <span className="font-semibold capitalize flex items-center">
+                Supir
+              </span>
               <input
-                className="ml-8 w-full md:w-[30%] focus:outline-none px-4 py-2 rounded-lg border border-gray-600 bg-gray-800 text-white"
+                className="ml-8 w-full md:w-[30%] focus:outline-none px-4 py-2 rounded-lg shadow bg-gray-400 placeholder:text-gray-800"
                 onChange={(e) => setDriverName(e.target.value)}
                 value={driverName}
                 placeholder="Masukkan Nama Supir"
               />
             </div>
-            <div className="flex justify-between items-center p-4 bg-gray-600 rounded-lg shadow-sm transition duration-200 hover:shadow-md">
-              <span className="font-semibold text-gray-300">Supplier</span>
+            <div className="flex justify-between items-center pl-4 p-2 bg-gray-300 rounded-lg shadow-sm transition duration-200 hover:shadow-md">
+              <span className="font-semibold capitalize flex items-center">
+                Supplier
+              </span>
               <input
-                className="ml-8 w-full md:w-[30%] focus:outline-none px-4 py-2 rounded-lg border border-gray-600 bg-gray-800 text-white"
+                className="ml-8 w-full md:w-[30%] focus:outline-none px-4 py-2 rounded-lg shadow bg-gray-400 placeholder:text-gray-800"
                 onChange={(e) => setSupplier(e.target.value)}
                 value={supplier}
                 placeholder="Masukkan Nama Supplier"
               />
             </div>
-            <div className="flex justify-between items-center p-4 bg-gray-600 rounded-lg shadow-sm transition duration-200 hover:shadow-md">
-              <span className="font-semibold text-gray-300">Plat Nomor</span>
+            <div className="flex justify-between items-center pl-4 p-2 bg-gray-300 rounded-lg shadow-sm transition duration-200 hover:shadow-md">
+              <span className="font-semibold capitalize flex items-center">
+                Plat Nomor
+              </span>
               <input
-                className="ml-8 w-full md:w-[30%] focus:outline-none px-4 py-2 rounded-lg border border-gray-600 bg-gray-800 text-white"
+                className="ml-8 w-full md:w-[30%] focus:outline-none px-4 py-2 rounded-lg shadow bg-gray-400 placeholder:text-gray-800"
                 onChange={(e) => setLicensePlate(e.target.value)}
                 value={licensePlate}
                 placeholder="Masukkan Plat Nomor"
               />
             </div>
-            <div className="flex justify-between items-center p-4 bg-gray-600 rounded-lg shadow-sm transition duration-200 hover:shadow-md">
-              <span className="font-semibold text-gray-300">Catatan</span>
+            <div className="flex justify-between items-center pl-4 p-2 bg-gray-300 rounded-lg shadow-sm transition duration-200 hover:shadow-md">
+              <span className="font-semibold capitalize flex items-center">
+                Catatan
+              </span>
               <input
-                className="ml-8 w-full md:w-[30%] focus:outline-none px-4 py-2 rounded-lg border border-gray-600 bg-gray-800 text-white"
+                className="ml-8 w-full md:w-[30%] focus:outline-none px-4 py-2 rounded-lg shadow bg-gray-400 placeholder:text-gray-800"
                 onChange={(e) => setNote(e.target.value)}
                 value={note}
                 placeholder="Masukkan Catatan"
               />
             </div>
-            <div className="flex justify-between items-center p-4 bg-gray-600 rounded-lg shadow-sm transition duration-200 hover:shadow-md">
-              <span className="font-semibold text-gray-300">
+            <div className="flex justify-between items-center pl-4 p-2 bg-gray-300 rounded-lg shadow-sm transition duration-200 hover:shadow-md">
+              <span className="font-semibold capitalize flex items-center">
                 Berat Penimbangan Pertama
               </span>
-              <span className="text-gray-200">
+              <span className="text-gray-800">
                 {firstWeight ? firstWeight + " kg" : "Menunggu data..."}
                 <button
                   onClick={handleCaptureWeight}

@@ -153,7 +153,7 @@ export default function Home() {
         <Layout>
           <div className="flex flex-wrap justify-between">
             <Card
-              className="w-[45%] lg:w-[30%] m-2"
+              className="w-[45%] lg:w-[32%] m-2"
               title={`Total Sampah Masuk 30 Hari Terakhir`}
               id="weight"
             >
@@ -165,7 +165,7 @@ export default function Home() {
               </span>
             </Card>
             <Card
-              className="w-[45%] lg:w-[30%] m-2"
+              className="w-[45%] lg:w-[32%] m-2"
               title={`Temperatur 1`}
               id="card2"
             >
@@ -177,7 +177,7 @@ export default function Home() {
               </span>
             </Card>
             <Card
-              className="w-[45%] lg:w-[30%] m-2"
+              className="w-[45%] lg:w-[32%] m-2"
               title={`Kelembaban 1`}
               id="card5"
             >
@@ -189,7 +189,7 @@ export default function Home() {
               </span>
             </Card>
             <Card
-              className="w-[45%] lg:w-[30%] m-2"
+              className="w-[45%] lg:w-[32%] m-2"
               title={`Temperatur 2`}
               id="card6"
             >
@@ -201,7 +201,7 @@ export default function Home() {
               </span>
             </Card>
             <Card
-              className="w-[45%] lg:w-[30%] m-2"
+              className="w-[45%] lg:w-[32%] m-2"
               title={`Kelembaban 2`}
               id="card7"
             >
@@ -213,7 +213,7 @@ export default function Home() {
               </span>
             </Card>
             <Card
-              className="w-[45%] lg:w-[30%] m-2"
+              className="w-[45%] lg:w-[32%] m-2"
               title={`Humidity 2`}
               id="card7"
             >
