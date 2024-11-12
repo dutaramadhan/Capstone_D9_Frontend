@@ -8,7 +8,7 @@ export default function Loading() {
       <FontAwesomeIcon
         icon={faCircleNotch}
         spin
-        className="fa-5x text-blue-600"
+        className="fa-5x text-gray-600"
       />
     </div>
   );

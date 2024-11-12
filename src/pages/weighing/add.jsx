@@ -17,38 +17,45 @@ export default function AddWeighing() {
   const [licensePlate, setLicensePlate] = useState("");
   const [note, setNote] = useState("");
 
-  // useEffect(() => {
-  //   if (isFetchedData) {
-  //     const socket = io(`${process.env.NEXT_PUBLIC_API_URL}`);
-
-  //     socket.on("weight_data", (data) => {
-  //       setFirstWeight(data.weight);
-  //     });
-
-  //     return () => {
-  //       socket.disconnect();
-  //     };
-  //   }
-  // }, [isFetchedData]);
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+    if (!token) {
+      router.push("/auth/login");
+    }
+  }, [router]);
 
   useEffect(() => {
     if (isFetchedData) {
-      const ws = new WebSocket(`${process.env.NEXT_PUBLIC_ESP1_URL}`);
+      const socket = io(`${process.env.NEXT_PUBLIC_API_URL}`);
 
-      ws.onopen = () => console.log("Connected to [FIRST] ESP32 WebSocket");
-      ws.onmessage = (event) => {
-        const data = JSON.parse(event.data);
+      socket.on("weight_data", (data) => {
         setFirstWeight(data.weight);
-      };
-      ws.onclose = () =>
-        console.log("Disconnected from [FIRST] ESP32 WebSocket");
+      });
 
       return () => {
-        ws.close();
-        console.log("WebSocket cleaned up");
+        socket.disconnect();
       };
     }
   }, [isFetchedData]);
+
+  // useEffect(() => {
+  //   if (isFetchedData) {
+  //     const ws = new WebSocket(`${process.env.NEXT_PUBLIC_ESP1_URL}`);
+
+  //     ws.onopen = () => console.log("Connected to [FIRST] ESP32 WebSocket");
+  //     ws.onmessage = (event) => {
+  //       const data = JSON.parse(event.data);
+  //       setFirstWeight(data.weight);
+  //     };
+  //     ws.onclose = () =>
+  //       console.log("Disconnected from [FIRST] ESP32 WebSocket");
+
+  //     return () => {
+  //       ws.close();
+  //       console.log("WebSocket cleaned up");
+  //     };
+  //   }
+  // }, [isFetchedData]);
 
   const handleCaptureWeight = () => {
     if (!firstWeight) {

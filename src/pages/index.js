@@ -9,11 +9,12 @@ import Layout from "@/components/Layout";
 
 import LineChart from "@/components/Chart/LineChart";
 import ReadingsChart from "@/components/Chart/ReadingsChart";
+import WeighingTable from "@/components/Table/WeighingTable";
 
 import { toast } from "react-toastify";
 import { Card } from "@/components/Card";
 
-import WeighingTable from "@/components/Table/WeighingTable";
+import Loading from "@/components/Loading";
 
 export default function Home() {
   const router = useRouter();
@@ -21,6 +22,7 @@ export default function Home() {
   const [weighingData, setWeighingData] = useState([]);
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
+  const [isLoading, setIsLoading] = useState(false);
 
   // data for reading's chart
   const [readingsData, setReadingsData] = useState({
@@ -62,6 +64,7 @@ export default function Home() {
   }, []);
 
   useEffect(() => {
+    setIsLoading(true);
     const fetchWeighingDataDaily = async () => {
       try {
         const response = await axios.get(
@@ -107,11 +110,13 @@ export default function Home() {
     })();
 
     fetchWeighingDataDaily();
+    setIsLoading(false);
   }, []);
 
   useEffect(() => {
     const fetchWeighingData = async () => {
       try {
+        setIsLoading(true);
         const response = await axios.get(
           `${process.env.NEXT_PUBLIC_API_URL}/api/weighing`,
           {
@@ -125,6 +130,8 @@ export default function Home() {
         setTotalPages(response.data.pagination.total_pages);
       } catch (error) {
         toast.error("Error fetching data:", error);
+      } finally {
+        setIsLoading(false);
       }
     };
     fetchWeighingData();
@@ -151,6 +158,7 @@ export default function Home() {
     <>
       <main>
         <Layout>
+          {isLoading && <Loading />}
           <div className="flex flex-wrap justify-between">
             <Card
               className="w-[45%] lg:w-[32%] m-2"

@@ -1,5 +1,6 @@
 import Layout from "@/components/Layout";
 import ConfirmationToast from "@/components/ConfirmationToast";
+import { Skeleton } from "@mui/material";
 
 import { useState, useEffect } from "react";
 import axios from "axios";
@@ -18,13 +19,21 @@ export default function WeighingDetails() {
   const router = useRouter();
   const { id } = router.query;
   const [weighingDetail, setWeighingDetail] = useState(null);
-  const [loading, setLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(false);
   const [secondWeight, setSecondWeight] = useState(null);
   const [isDataFetched, setIsDataFetched] = useState(false);
   const [isFetchWeight, setIsFetchWeight] = useState(true);
   const [isFetchRepeat, setIsFetchRepeat] = useState(false);
 
   useEffect(() => {
+    const token = localStorage.getItem("token");
+    if (!token) {
+      router.push("/auth/login");
+    }
+  }, [router]);
+
+  useEffect(() => {
+    setIsLoading(true);
     const fetchWeighingDetail = async () => {
       if (!id) return;
 
@@ -41,35 +50,12 @@ export default function WeighingDetails() {
             (error.response?.data?.message || "Network Error")
         );
       } finally {
-        setLoading(false);
       }
     };
 
     fetchWeighingDetail();
+    setIsLoading(false);
   }, [id, isFetchRepeat]);
-
-  useEffect(() => {
-    if (
-      isDataFetched &&
-      weighingDetail.second_weight == null &&
-      isFetchWeight
-    ) {
-      const ws = new WebSocket(`${process.env.NEXT_PUBLIC_ESP1_URL}`);
-
-      ws.onopen = () => console.log("Connected to [FIRST] ESP32 WebSocket");
-      ws.onmessage = (event) => {
-        const data = JSON.parse(event.data);
-        setSecondWeight(data.weight);
-      };
-      ws.onclose = () =>
-        console.log("Disconnected from [FIRST] ESP32 WebSocket");
-
-      return () => {
-        ws.close();
-        console.log("WebSocket cleaned up");
-      };
-    }
-  }, [isDataFetched, secondWeight, isFetchWeight]);
 
   // useEffect(() => {
   //   if (
@@ -77,17 +63,40 @@ export default function WeighingDetails() {
   //     weighingDetail.second_weight == null &&
   //     isFetchWeight
   //   ) {
-  //     const socket = io(`${process.env.NEXT_PUBLIC_API_URL}`);
+  //     const ws = new WebSocket(`${process.env.NEXT_PUBLIC_ESP1_URL}`);
 
-  //     socket.on("weight_data", (data) => {
+  //     ws.onopen = () => console.log("Connected to [FIRST] ESP32 WebSocket");
+  //     ws.onmessage = (event) => {
+  //       const data = JSON.parse(event.data);
   //       setSecondWeight(data.weight);
-  //     });
+  //     };
+  //     ws.onclose = () =>
+  //       console.log("Disconnected from [FIRST] ESP32 WebSocket");
 
   //     return () => {
-  //       socket.disconnect();
+  //       ws.close();
+  //       console.log("WebSocket cleaned up");
   //     };
   //   }
-  // }, [id, isDataFetched, isFetchWeight]);
+  // }, [isDataFetched, secondWeight, isFetchWeight]);
+
+  useEffect(() => {
+    if (
+      isDataFetched &&
+      weighingDetail.second_weight == null &&
+      isFetchWeight
+    ) {
+      const socket = io(`${process.env.NEXT_PUBLIC_API_URL}`);
+
+      socket.on("weight_data", (data) => {
+        setSecondWeight(data.weight);
+      });
+
+      return () => {
+        socket.disconnect();
+      };
+    }
+  }, [id, isDataFetched, isFetchWeight]);
 
   const handleCaptureWeight = () => {
     if (!secondWeight) {
@@ -100,6 +109,7 @@ export default function WeighingDetails() {
         message={`Apakah Berat ${secondWeight} Sudah Sesuai?`}
         onConfirm={async () => {
           try {
+            setIsLoading(true);
             await axios.put(
               `${process.env.NEXT_PUBLIC_API_URL}/api/weighing/${id}`,
               { second_weight: secondWeight }
@@ -111,6 +121,8 @@ export default function WeighingDetails() {
               "Gagal Menyimpan Data Berat: " +
                 (error.response?.data?.message || "Network Error")
             );
+          } finally {
+            setIsLoading(false);
           }
           toast.dismiss(toastId);
         }}
@@ -131,12 +143,15 @@ export default function WeighingDetails() {
 
   const handlePrint = async () => {
     try {
+      setIsLoading(true);
       router.push(`${process.env.NEXT_PUBLIC_API_URL}/api/weighing/${id}/pdf`);
     } catch (error) {
       toast.error(
         "Error fetching PDF: " +
           (error.response?.data?.message || "Network Error")
       );
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -146,6 +161,7 @@ export default function WeighingDetails() {
         message={`Apakah Anda Yakin Ingin Menghapus Data Ini?`}
         onConfirm={async () => {
           try {
+            setIsLoading(true);
             await axios.delete(
               `${process.env.NEXT_PUBLIC_API_URL}/api/weighing/${id}`
             );
@@ -156,6 +172,8 @@ export default function WeighingDetails() {
               "Gagal Menghapus Data " +
                 (error.response?.data?.message || "Network Error")
             );
+          } finally {
+            setIsLoading(false);
           }
           toast.dismiss(toastId);
         }}
@@ -204,6 +222,7 @@ export default function WeighingDetails() {
 
   return (
     <Layout>
+      {isLoading && <Skeleton />}
       <div className="p-6 max-w-full mx-auto bg-gray-800 rounded-lg shadow-xl">
         <h1 className="text-4xl font-bold mb-6 text-center text-white">
           Data Timbangan
@@ -250,7 +269,7 @@ export default function WeighingDetails() {
                   ) : (
                     <FaTimes className="mr-2 text-red-400" />
                   )}
-                  Status:
+                  Status
                 </span>
                 <span
                   className={`font-semibold ${

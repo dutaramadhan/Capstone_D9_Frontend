@@ -20,9 +20,16 @@ export default function Weighing() {
   const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
+    const token = localStorage.getItem("token");
+    if (!token) {
+      router.push("/auth/login");
+    }
+  }, [router]);
+
+  useEffect(() => {
+    setIsLoading(true);
     const fetchWeighingData = async () => {
       try {
-        setIsLoading(true);
         const params = {
           page: page,
           per_page: 12,
