@@ -1,6 +1,7 @@
 import { useEffect, useState, useRef } from "react";
 import { useRouter } from "next/router";
 import Link from "next/link";
+import Image from "next/image";
 
 import Parser from "@/utils/Parser";
 
@@ -269,7 +270,7 @@ export default function OCR() {
   return (
     <Layout>
       {/* hidden elements */}
-      <img
+      <Image
         ref={imageRef}
         alt="Preview"
         className="hidden"
