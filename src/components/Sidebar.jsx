@@ -15,7 +15,7 @@ export default function Sidebar({ isOpen, closeSidebar }) {
       } transform transition-transform duration-300 ease-in-out fixed flex-col w-64 bg-gray-800 h-full`}
     >
       <div className="flex items-center justify-center h-16 bg-gray-900">
-        <span className="text-white text-base">Dashboard TPST Sinduadi</span>
+        <span className="text-white text-base">Dashboard Capstone D-09</span>
       </div>
       <div className="flex flex-col flex-1 overflow-y-auto">
         <nav className="flex-1 px-2 py-4 bg-gray-800">

@@ -38,7 +38,7 @@ export default function LoginPage() {
             <div className="w-full flex-1">
               <div className="mb-20 border-b text-center">
                 <div className="text-[20px] sm:text-[24px] font-bold md:text-[26px] lg:text-[30px] leading-none px-2 inline-block text-gray-600 tracking-wide bg-white transform translate-y-1/2">
-                  APLIKASI DASHBOARD TPST SINDUADI SLEMAN
+                  APLIKASI DASHBOARD CAPSTONE D-09
                 </div>
               </div>
               <div className="mx-auto max-w-xs">
