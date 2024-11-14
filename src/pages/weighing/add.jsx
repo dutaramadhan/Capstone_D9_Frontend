@@ -9,7 +9,6 @@ import { io } from "socket.io-client";
 
 export default function AddWeighing() {
   const router = useRouter();
-  const [loading, setLoading] = useState(true);
   const [isFetchedData, setIsFetchedData] = useState(true);
   const [firstWeight, setFirstWeight] = useState(null);
   const [driverName, setDriverName] = useState("");
@@ -18,44 +17,23 @@ export default function AddWeighing() {
   const [note, setNote] = useState("");
 
   useEffect(() => {
-    const token = localStorage.getItem("token");
-    if (!token) {
-      router.push("/auth/login");
-    }
-  }, [router]);
-
-  useEffect(() => {
     if (isFetchedData) {
-      const socket = io(`${process.env.NEXT_PUBLIC_API_URL}`);
+      const ws = new WebSocket(`${process.env.NEXT_PUBLIC_ESP1_URL}`);
 
-      socket.on("weight_data", (data) => {
-        setFirstWeight(data.weight);
-      });
+      ws.onopen = () => console.log("Connected to [FIRST] ESP32 WebSocket");
+      ws.onmessage = (event) => {
+        const data = JSON.parse(event.data);
+        setFirstWeight(data.weight / 1000);
+      };
+      ws.onclose = () =>
+        console.log("Disconnected from [FIRST] ESP32 WebSocket");
 
       return () => {
-        socket.disconnect();
+        ws.close();
+        console.log("WebSocket cleaned up");
       };
     }
   }, [isFetchedData]);
-
-  // useEffect(() => {
-  //   if (isFetchedData) {
-  //     const ws = new WebSocket(`${process.env.NEXT_PUBLIC_ESP1_URL}`);
-
-  //     ws.onopen = () => console.log("Connected to [FIRST] ESP32 WebSocket");
-  //     ws.onmessage = (event) => {
-  //       const data = JSON.parse(event.data);
-  //       setFirstWeight(data.weight);
-  //     };
-  //     ws.onclose = () =>
-  //       console.log("Disconnected from [FIRST] ESP32 WebSocket");
-
-  //     return () => {
-  //       ws.close();
-  //       console.log("WebSocket cleaned up");
-  //     };
-  //   }
-  // }, [isFetchedData]);
 
   const handleCaptureWeight = () => {
     if (!firstWeight) {

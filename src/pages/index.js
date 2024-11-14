@@ -1,8 +1,8 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/router";
 import axios from "axios";
-import { io } from "socket.io-client";
 import { FaTemperatureFull, FaWeightHanging } from "react-icons/fa6";
+import { IoIosWater } from "react-icons/io";
 import { WiHumidity } from "react-icons/wi";
 
 import Layout from "@/components/Layout";
@@ -23,6 +23,10 @@ export default function Home() {
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [isLoading, setIsLoading] = useState(false);
+  const [temperatureFish, setTemperatureFish] = useState();
+  const [waterQualityFish, setWaterQualityFish] = useState();
+  const [temperatureMaggot, setTemperatureMaggot] = useState();
+  const [humidityMaggot, setHumidityMaggot] = useState();
 
   // data for reading's chart
   const [readingsData, setReadingsData] = useState({
@@ -30,11 +34,6 @@ export default function Home() {
     categories: [],
     series: {},
   });
-
-  const [temperature1, setTemperature1] = useState(null);
-  const [temperature2, setTemperature2] = useState(null);
-  const [humidity1, setHumidity1] = useState();
-  const [humidity2, setHumidity2] = useState();
 
   useEffect(() => {
     const token = localStorage.getItem("token");
@@ -44,22 +43,38 @@ export default function Home() {
   }, [router]);
 
   useEffect(() => {
-    const ws = new WebSocket(`${process.env.NEXT_PUBLIC_ESP2_URL}`);
+    const wsFish = new WebSocket(`${process.env.NEXT_PUBLIC_ESP2_URL}`);
+    const wsMaggot = new WebSocket(`${process.env.NEXT_PUBLIC_ESP3_URL}`);
 
-    ws.onopen = function () {
+    wsFish.onopen = function () {
       console.log("Connected to [SECOND] ESP32 WebSocket");
     };
 
-    ws.onmessage = function (event) {
-      const data = JSON.parse(event.data);
-      setTemperature1(data.temperature1);
-      setHumidity1(data.humidity1);
-      setTemperature2(data.temperature2);
-      setHumidity2(data.humidity2);
+    wsMaggot.onopen = function () {
+      console.log("Connected to [Third] ESP32 WebSocket");
     };
 
-    ws.onclose = function () {
+    wsFish.onmessage = function (event) {
+      const data = JSON.parse(event.data);
+      setTemperatureFish(data.temperature1);
+      setWaterQualityFish(data.tds);
+    };
+
+    wsMaggot.onmessage = function (event) {
+      const data = JSON.parse(event.data);
+      setTemperatureMaggot(data.temperature2);
+      setHumidityMaggot(data.humidity2);
+    };
+
+    wsFish.onclose = () =>
       console.log("Disconnected from [SECOND] ESP32 WebSocket");
+    wsMaggot.onclose = () =>
+      console.log("Disconnected from [THIRD] ESP32 WebSocket");
+
+    return () => {
+      wsFish.close();
+      wsMaggot.close();
+      console.log("WebSocket cleaned up");
     };
   }, []);
 
@@ -174,61 +189,49 @@ export default function Home() {
             </Card>
             <Card
               className="w-[45%] lg:w-[32%] m-2"
-              title={`Temperatur 1`}
-              id="card2"
+              title={`Temperatur Kolam 1`}
+              id="cardtemperaturefish"
             >
               <span className="flex">
                 <FaTemperatureFull className="mr-2 text-red-600 text-base lg:text-3xl" />
                 <p className="font-semibold text-base lg:text-3xl ml-1">
-                  {temperature1}
+                  {temperatureFish ?? "Menunggu Data..."} °C
                 </p>
               </span>
             </Card>
             <Card
               className="w-[45%] lg:w-[32%] m-2"
-              title={`Kelembaban 1`}
-              id="card5"
+              title={`Kualitas Air Kolam 1`}
+              id="cardwaterqualityfish"
             >
               <span className="flex">
-                <WiHumidity className="mr-2 text-blue-600 text-base lg:text-3xl" />
-                <p className="ffont-semibold text-base lg:text-3xl ml-1">
-                  {humidity1}
+                <IoIosWater className="mr-2 text-blue-600 text-base lg:text-3xl" />
+                <p className="font-semibold text-base lg:text-3xl ml-1">
+                  {waterQualityFish ?? "Menunggu Data..."} PPM
                 </p>
               </span>
             </Card>
             <Card
               className="w-[45%] lg:w-[32%] m-2"
-              title={`Temperatur 2`}
-              id="card6"
+              title={`Temperatur Kolam 1`}
+              id="cardtemperaturemaggot"
             >
               <span className="flex">
                 <FaTemperatureFull className="mr-2 text-red-600 text-base lg:text-3xl" />
                 <p className="font-semibold text-base lg:text-3xl ml-1">
-                  {temperature2}
+                  {temperatureFish ?? "Menunggu Data..."} °C
                 </p>
               </span>
             </Card>
             <Card
               className="w-[45%] lg:w-[32%] m-2"
-              title={`Kelembaban 2`}
-              id="card7"
+              title={`Kualitas Air Kolam 1`}
+              id="cardhumidymaggot"
             >
               <span className="flex">
                 <WiHumidity className="mr-2 text-blue-600 text-base lg:text-3xl" />
                 <p className="font-semibold text-base lg:text-3xl ml-1">
-                  {humidity2}
-                </p>
-              </span>
-            </Card>
-            <Card
-              className="w-[45%] lg:w-[32%] m-2"
-              title={`Humidity 2`}
-              id="card7"
-            >
-              <span className="flex">
-                <WiHumidity className="mr-2 text-blue-600 text-base lg:text-3xl" />
-                <p className="font-semibold text-base lg:text-3xl ml-1">
-                  {humidity2}
+                  {waterQualityFish ?? "Menunggu Data..."} %
                 </p>
               </span>
             </Card>

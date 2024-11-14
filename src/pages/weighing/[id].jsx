@@ -57,29 +57,6 @@ export default function WeighingDetails() {
     setIsLoading(false);
   }, [id, isFetchRepeat]);
 
-  // useEffect(() => {
-  //   if (
-  //     isDataFetched &&
-  //     weighingDetail.second_weight == null &&
-  //     isFetchWeight
-  //   ) {
-  //     const ws = new WebSocket(`${process.env.NEXT_PUBLIC_ESP1_URL}`);
-
-  //     ws.onopen = () => console.log("Connected to [FIRST] ESP32 WebSocket");
-  //     ws.onmessage = (event) => {
-  //       const data = JSON.parse(event.data);
-  //       setSecondWeight(data.weight);
-  //     };
-  //     ws.onclose = () =>
-  //       console.log("Disconnected from [FIRST] ESP32 WebSocket");
-
-  //     return () => {
-  //       ws.close();
-  //       console.log("WebSocket cleaned up");
-  //     };
-  //   }
-  // }, [isDataFetched, secondWeight, isFetchWeight]);
-
   useEffect(() => {
     if (
       isDataFetched &&
@@ -89,7 +66,7 @@ export default function WeighingDetails() {
       const socket = io(`${process.env.NEXT_PUBLIC_API_URL}`);
 
       socket.on("weight_data", (data) => {
-        setSecondWeight(data.weight);
+        setSecondWeight(data.weight / 1000);
       });
 
       return () => {
