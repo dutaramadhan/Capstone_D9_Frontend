@@ -10,7 +10,7 @@ import { io } from "socket.io-client";
 export default function AddWeighing() {
   const router = useRouter();
   const [isFetchedData, setIsFetchedData] = useState(true);
-  const [firstWeight, setFirstWeight] = useState(null);
+  const [firstWeight, setFirstWeight] = useState(0);
   const [driverName, setDriverName] = useState("");
   const [supplier, setSupplier] = useState("");
   const [licensePlate, setLicensePlate] = useState("");
@@ -36,7 +36,7 @@ export default function AddWeighing() {
   }, [isFetchedData]);
 
   const handleCaptureWeight = () => {
-    if (!firstWeight) {
+    if (firstWeight == null) {
       toast.warn("Data Belum Tersedia");
       return;
     }
@@ -65,7 +65,7 @@ export default function AddWeighing() {
   };
 
   const handleSubmitWeight = async () => {
-    if (!driverName || !supplier || !licensePlate || !firstWeight) {
+    if (!driverName || !supplier || !licensePlate || firstWeight == null) {
       toast.warn("Data Belum Lengkap");
       return;
     }
@@ -164,7 +164,7 @@ export default function AddWeighing() {
                 Berat Penimbangan Pertama
               </span>
               <span className="text-gray-800">
-                {firstWeight ? firstWeight + " kg" : "Menunggu data..."}
+                {firstWeight.toFixed(3) ?? "Menunggu data..."} kg
                 <button
                   onClick={handleCaptureWeight}
                   className="ml-4 px-2 py-1 bg-green-600 text-white rounded hover:bg-green-700 transition duration-300"

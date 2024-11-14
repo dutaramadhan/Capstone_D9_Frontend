@@ -213,7 +213,7 @@ export default function Home() {
             </Card>
             <Card
               className="w-[48%] xl:w-[48.5%] m-2"
-              title={`Temperatur Tempat Maggot`}
+              title={`Temperatur Maggot`}
               id="cardtemperaturemaggot"
             >
               <span className="flex">
@@ -225,7 +225,7 @@ export default function Home() {
             </Card>
             <Card
               className="w-[48%] xl:w-[48.5%] m-2"
-              title={`Kelembaban Tempat Maggot`}
+              title={`Kelembaban Maggot`}
               id="cardhumidymaggot"
             >
               <span className="flex">

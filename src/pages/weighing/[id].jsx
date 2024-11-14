@@ -282,12 +282,12 @@ export default function WeighingDetails() {
                 </span>
                 <span className="flex items-center">
                   {weighingDetail.second_weight ? (
-                    weighingDetail.second_weight + " kg"
+                    weighingDetail.second_weight.toFixed(3) + " kg"
                   ) : (
                     <>
                       <span>
                         {secondWeight
-                          ? secondWeight + " kg"
+                          ? secondWeight.toFixed(3) + " kg"
                           : "Menunggu data..."}
                       </span>
                       <button
@@ -327,7 +327,7 @@ export default function WeighingDetails() {
                   }`}
                 >
                   {weighingDetail.net_weight
-                    ? weighingDetail.net_weight + " kg"
+                    ? weighingDetail.net_weight.toFixed(3) + " kg"
                     : "Penimbangan Kedua Belum Dilakukan"}
                 </span>
               </div>
