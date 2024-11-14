@@ -176,7 +176,7 @@ export default function Home() {
           {isLoading && <Loading />}
           <div className="flex flex-wrap justify-between">
             <Card
-              className="w-[45%] lg:w-[32%] m-2"
+              className="w-[98%] xl:w-[32%] m-2"
               title={`Total Sampah Masuk 30 Hari Terakhir`}
               id="weight"
             >
@@ -188,8 +188,8 @@ export default function Home() {
               </span>
             </Card>
             <Card
-              className="w-[45%] lg:w-[32%] m-2"
-              title={`Temperatur Kolam 1`}
+              className="w-[48%] xl:w-[32%] m-2"
+              title={`Temperatur Kolam`}
               id="cardtemperaturefish"
             >
               <span className="flex">
@@ -200,8 +200,8 @@ export default function Home() {
               </span>
             </Card>
             <Card
-              className="w-[45%] lg:w-[32%] m-2"
-              title={`Kualitas Air Kolam 1`}
+              className="w-[48%] xl:w-[32%] m-2"
+              title={`Kualitas Air Kolam`}
               id="cardwaterqualityfish"
             >
               <span className="flex">
@@ -212,26 +212,26 @@ export default function Home() {
               </span>
             </Card>
             <Card
-              className="w-[45%] lg:w-[32%] m-2"
-              title={`Temperatur Kolam 1`}
+              className="w-[48%] xl:w-[48.5%] m-2"
+              title={`Temperatur Tempat Maggot`}
               id="cardtemperaturemaggot"
             >
               <span className="flex">
                 <FaTemperatureFull className="mr-2 text-red-600 text-base lg:text-3xl" />
                 <p className="font-semibold text-base lg:text-3xl ml-1">
-                  {temperatureFish ?? "Menunggu Data..."} °C
+                  {temperatureMaggot ?? "Menunggu Data..."} °C
                 </p>
               </span>
             </Card>
             <Card
-              className="w-[45%] lg:w-[32%] m-2"
-              title={`Kualitas Air Kolam 1`}
+              className="w-[48%] xl:w-[48.5%] m-2"
+              title={`Kelembaban Tempat Maggot`}
               id="cardhumidymaggot"
             >
               <span className="flex">
                 <WiHumidity className="mr-2 text-blue-600 text-base lg:text-3xl" />
                 <p className="font-semibold text-base lg:text-3xl ml-1">
-                  {waterQualityFish ?? "Menunggu Data..."} %
+                  {humidityMaggot ?? "Menunggu Data..."} %
                 </p>
               </span>
             </Card>
