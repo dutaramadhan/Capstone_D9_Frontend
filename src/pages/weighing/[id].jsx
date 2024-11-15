@@ -63,17 +63,41 @@ export default function WeighingDetails() {
       weighingDetail.second_weight == null &&
       isFetchWeight
     ) {
-      const socket = io(`${process.env.NEXT_PUBLIC_API_URL}`);
+      const ws = new WebSocket(`${process.env.NEXT_PUBLIC_ESP1_URL}`);
 
-      socket.on("weight_data", (data) => {
-        setSecondWeight(data.weight / 1000);
-      });
+      ws.onopen = () => console.log("Connected to [FIRST] ESP32 WebSocket");
+      ws.onmessage = (event) => {
+        const data = JSON.parse(event.data);
+        setSecondWeight((data.weight / 1000).toFixed(3));
+      };
+      ws.onclose = () =>
+        console.log("Disconnected from [FIRST] ESP32 WebSocket");
 
       return () => {
-        socket.disconnect();
+        ws.close();
+        console.log("WebSocket cleaned up");
       };
     }
   }, [id, isDataFetched, isFetchWeight]);
+
+  // useEffect(() => {
+  //   if (
+  //     isDataFetched &&
+  //     weighingDetail.second_weight == null &&
+  //     isFetchWeight
+  //   ) {
+  //     const socket = io(`${process.env.NEXT_PUBLIC_API_URL}`);
+
+  //     socket.on("weight_data", (data) => {
+  //       setSecondWeight(data.weight / 1000);
+  //       console.log(secondWeight);
+  //     });
+
+  //     return () => {
+  //       socket.disconnect();
+  //     };
+  //   }
+  // }, [id, isDataFetched, isFetchWeight]);
 
   const handleCaptureWeight = () => {
     if (!secondWeight) {
@@ -282,12 +306,12 @@ export default function WeighingDetails() {
                 </span>
                 <span className="flex items-center">
                   {weighingDetail.second_weight ? (
-                    weighingDetail.second_weight.toFixed(3) + " kg"
+                    weighingDetail.second_weight + " kg"
                   ) : (
                     <>
                       <span>
-                        {secondWeight
-                          ? secondWeight.toFixed(3) + " kg"
+                        {secondWeight != null
+                          ? secondWeight + " kg"
                           : "Menunggu data..."}
                       </span>
                       <button
