@@ -39,7 +39,7 @@ export default function OCR() {
   const imagePreviewRef = useRef(null);
 
   useEffect(() => {
-    const token = localStorage.getItem("token");
+    const token = sessionStorage.getItem("token");
     if (!token) {
       router.push("/auth/login");
     }

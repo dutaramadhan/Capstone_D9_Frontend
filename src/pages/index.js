@@ -23,10 +23,10 @@ export default function Home() {
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [isLoading, setIsLoading] = useState(false);
-  const [temperatureFish, setTemperatureFish] = useState();
-  const [waterQualityFish, setWaterQualityFish] = useState();
-  const [temperatureMaggot, setTemperatureMaggot] = useState();
-  const [humidityMaggot, setHumidityMaggot] = useState();
+  // const [temperatureFish, setTemperatureFish] = useState();
+  // const [waterQualityFish, setWaterQualityFish] = useState();
+  // const [temperatureMaggot, setTemperatureMaggot] = useState();
+  // const [humidityMaggot, setHumidityMaggot] = useState();
 
   // data for reading's chart
   const [readingsData, setReadingsData] = useState({
@@ -36,47 +36,47 @@ export default function Home() {
   });
 
   useEffect(() => {
-    const token = localStorage.getItem("token");
+    const token = sessionStorage.getItem("token");
     if (!token) {
       router.push("/auth/login");
     }
   }, [router]);
 
-  useEffect(() => {
-    const wsFish = new WebSocket(`${process.env.NEXT_PUBLIC_ESP2_URL}`);
-    const wsMaggot = new WebSocket(`${process.env.NEXT_PUBLIC_ESP3_URL}`);
+  // useEffect(() => {
+  //   const wsFish = new WebSocket(`${process.env.NEXT_PUBLIC_ESP2_URL}`);
+  //   const wsMaggot = new WebSocket(`${process.env.NEXT_PUBLIC_ESP3_URL}`);
 
-    wsFish.onopen = function () {
-      console.log("Connected to [SECOND] ESP32 WebSocket");
-    };
+  //   wsFish.onopen = function () {
+  //     console.log("Connected to [SECOND] ESP32 WebSocket");
+  //   };
 
-    wsMaggot.onopen = function () {
-      console.log("Connected to [Third] ESP32 WebSocket");
-    };
+  //   wsMaggot.onopen = function () {
+  //     console.log("Connected to [Third] ESP32 WebSocket");
+  //   };
 
-    wsFish.onmessage = function (event) {
-      const data = JSON.parse(event.data);
-      setTemperatureFish(data.temperature1);
-      setWaterQualityFish(data.tds);
-    };
+  //   wsFish.onmessage = function (event) {
+  //     const data = JSON.parse(event.data);
+  //     setTemperatureFish(data.temperature1);
+  //     setWaterQualityFish(data.tds);
+  //   };
 
-    wsMaggot.onmessage = function (event) {
-      const data = JSON.parse(event.data);
-      setTemperatureMaggot(data.temperature2);
-      setHumidityMaggot(data.humidity2);
-    };
+  //   wsMaggot.onmessage = function (event) {
+  //     const data = JSON.parse(event.data);
+  //     setTemperatureMaggot(data.temperature2);
+  //     setHumidityMaggot(data.humidity2);
+  //   };
 
-    wsFish.onclose = () =>
-      console.log("Disconnected from [SECOND] ESP32 WebSocket");
-    wsMaggot.onclose = () =>
-      console.log("Disconnected from [THIRD] ESP32 WebSocket");
+  //   wsFish.onclose = () =>
+  //     console.log("Disconnected from [SECOND] ESP32 WebSocket");
+  //   wsMaggot.onclose = () =>
+  //     console.log("Disconnected from [THIRD] ESP32 WebSocket");
 
-    return () => {
-      wsFish.close();
-      wsMaggot.close();
-      console.log("WebSocket cleaned up");
-    };
-  }, []);
+  //   return () => {
+  //     wsFish.close();
+  //     wsMaggot.close();
+  //     console.log("WebSocket cleaned up");
+  //   };
+  // }, []);
 
   useEffect(() => {
     setIsLoading(true);
@@ -92,37 +92,37 @@ export default function Home() {
     };
 
     // fetch readings data
-    (async () => {
-      try {
-        const thisYear = new Date().getFullYear();
-        const response = await fetch(
-          `${process.env.NEXT_PUBLIC_PHP_API}/readings.php?tps_id=1&from=${thisYear}-01-01&to=${thisYear}-12-31`
-        );
-        let result = await response.json();
+    // (async () => {
+    //   try {
+    //     const thisYear = new Date().getFullYear();
+    //     const response = await fetch(
+    //       `${process.env.NEXT_PUBLIC_PHP_API}/readings.php?tps_id=1&from=${thisYear}-01-01&to=${thisYear}-12-31`
+    //     );
+    //     let result = await response.json();
 
-        if (!Array.isArray(result)) result = [result];
-        else result = result.reverse();
+    //     if (!Array.isArray(result)) result = [result];
+    //     else result = result.reverse();
 
-        let temp = { dates: [], categories: [], series: {} };
+    //     let temp = { dates: [], categories: [], series: {} };
 
-        temp.dates = result.map((data) =>
-          data.date.split("-").reverse().join("-")
-        );
-        delete result[0].id;
-        delete result[0].tps_id;
-        delete result[0].date_added;
-        delete result[0].date;
-        for (const category in result[0])
-          temp.series[category.toUpperCase().replace(/_/g, " ")] = result.map(
-            (data) => Number(data[category])
-          );
-        temp.categories = Object.keys(temp.series);
+    //     temp.dates = result.map((data) =>
+    //       data.date.split("-").reverse().join("-")
+    //     );
+    //     delete result[0].id;
+    //     delete result[0].tps_id;
+    //     delete result[0].date_added;
+    //     delete result[0].date;
+    //     for (const category in result[0])
+    //       temp.series[category.toUpperCase().replace(/_/g, " ")] = result.map(
+    //         (data) => Number(data[category])
+    //       );
+    //     temp.categories = Object.keys(temp.series);
 
-        setReadingsData(temp);
-      } catch (error) {
-        toast.error("Error fetching data:", error);
-      }
-    })();
+    //     setReadingsData(temp);
+    //   } catch (error) {
+    //     toast.error(error.response?.data?.message || error.message);
+    //   }
+    // })();
 
     fetchWeighingDataDaily();
     setIsLoading(false);
@@ -144,7 +144,7 @@ export default function Home() {
         setWeighingData(response.data.data);
         setTotalPages(response.data.pagination.total_pages);
       } catch (error) {
-        toast.error("Error fetching data:", error);
+        toast.error(error.response?.data?.message || error.message);
       } finally {
         setIsLoading(false);
       }
@@ -164,7 +164,7 @@ export default function Home() {
     }
   };
 
-  const totalWaste = weighingDataDaily.reduce(
+  const totalWaste30Days = weighingDataDaily.reduce(
     (total, item) => total + item.total_weight,
     0
   );
@@ -174,20 +174,32 @@ export default function Home() {
       <main>
         <Layout>
           {isLoading && <Loading />}
-          <div className="flex flex-wrap justify-between">
-            <Card
-              className="w-[98%] xl:w-[32%] m-2"
-              title={`Total Sampah Masuk 30 Hari Terakhir`}
-              id="weight"
-            >
-              <span className="flex">
-                <FaWeightHanging className="mr-2 text-indigo-600 text-base lg:text-3xl" />
-                <p className="font-semibold text-base lg:text-3xl ml-1">
-                  {totalWaste.toFixed(1)} kg
-                </p>
-              </span>
-            </Card>
-            <Card
+          <div className="flex flex-wrap -mx-2">
+            <div className="w-full lg:w-1/2 px-2">
+              <Card className="w-full" title="Total Sampah Masuk" id="weight">
+                <span className="flex">
+                  <FaWeightHanging className="mr-2 text-blue-600 text-base lg:text-3xl" />
+                  <p className="font-semibold text-base lg:text-3xl ml-1">
+                    {totalWaste30Days.toFixed(1)} kg
+                  </p>
+                </span>
+              </Card>
+            </div>
+            <div className="w-full lg:w-1/2 px-2">
+              <Card
+                className="w-full"
+                title="Total Sampah Masuk 30 Hari Terakhir"
+                id="weight"
+              >
+                <span className="flex">
+                  <FaWeightHanging className="mr-2 text-red-600 text-base lg:text-3xl" />
+                  <p className="font-semibold text-base lg:text-3xl ml-1">
+                    {totalWaste30Days.toFixed(1)} kg
+                  </p>
+                </span>
+              </Card>
+            </div>
+            {/* <Card
               className="w-[48%] xl:w-[32%] m-2"
               title={`Temperatur Kolam`}
               id="cardtemperaturefish"
@@ -234,7 +246,7 @@ export default function Home() {
                   {humidityMaggot ?? "Menunggu Data..."} %
                 </p>
               </span>
-            </Card>
+            </Card> */}
           </div>
           <LineChart
             data={weighingDataDaily}
@@ -276,7 +288,7 @@ export default function Home() {
               </button>
             </div>
           </Card>
-          <ReadingsChart data={readingsData} />
+          {/* <ReadingsChart data={readingsData} /> */}
         </Layout>
       </main>
     </>

@@ -20,7 +20,7 @@ export default function Weighing() {
   const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
-    const token = localStorage.getItem("token");
+    const token = sessionStorage.getItem("token");
     if (!token) {
       router.push("/auth/login");
     }
@@ -50,13 +50,9 @@ export default function Weighing() {
         );
         setWeighingData(response.data.data);
         setTotalPages(response.data.pagination.total_pages);
-        console.log(response.data.pagination.total_pages);
       } catch (error) {
         setWeighingData([]);
-        toast.error(
-          "Error fetching data: " +
-            (error.response?.data?.message || error.message)
-        );
+        toast.error(error.response?.data?.message || error.message);
       } finally {
         setIsLoading(false);
       }

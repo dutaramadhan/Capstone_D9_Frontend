@@ -28,7 +28,7 @@ export default function Sidebar({ isOpen, closeSidebar }) {
             <RxDashboard className="h-6 w-6 mr-2" />
             Dashboard
           </Link>
-          <Link
+          {/* <Link
             href="/ocr"
             className={`flex items-center px-4 py-2 mt-2 text-gray-100 hover:bg-gray-700 ${
               currentPath === "/ocr" ? "bg-gray-700 shadow" : ""
@@ -36,7 +36,7 @@ export default function Sidebar({ isOpen, closeSidebar }) {
           >
             <IoCameraOutline className="h-6 w-6 mr-2" />
             OCR
-          </Link>
+          </Link> */}
           <Link
             href="/weighing"
             className={`flex items-center px-4 py-2 mt-2 text-gray-100 hover:bg-gray-700 ${

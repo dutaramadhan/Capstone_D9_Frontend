@@ -26,7 +26,7 @@ export default function WeighingDetails() {
   const [isFetchRepeat, setIsFetchRepeat] = useState(false);
 
   useEffect(() => {
-    const token = localStorage.getItem("token");
+    const token = sessionStorage.getItem("token");
     if (!token) {
       router.push("/auth/login");
     }
@@ -57,47 +57,47 @@ export default function WeighingDetails() {
     setIsLoading(false);
   }, [id, isFetchRepeat]);
 
-  useEffect(() => {
-    if (
-      isDataFetched &&
-      weighingDetail.second_weight == null &&
-      isFetchWeight
-    ) {
-      const ws = new WebSocket(`${process.env.NEXT_PUBLIC_ESP1_URL}`);
-
-      ws.onopen = () => console.log("Connected to [FIRST] ESP32 WebSocket");
-      ws.onmessage = (event) => {
-        const data = JSON.parse(event.data);
-        setSecondWeight((data.weight / 1000).toFixed(3));
-      };
-      ws.onclose = () =>
-        console.log("Disconnected from [FIRST] ESP32 WebSocket");
-
-      return () => {
-        ws.close();
-        console.log("WebSocket cleaned up");
-      };
-    }
-  }, [id, isDataFetched, isFetchWeight]);
-
   // useEffect(() => {
   //   if (
   //     isDataFetched &&
   //     weighingDetail.second_weight == null &&
   //     isFetchWeight
   //   ) {
-  //     const socket = io(`${process.env.NEXT_PUBLIC_API_URL}`);
+  //     const ws = new WebSocket(`${process.env.NEXT_PUBLIC_ESP1_URL}`);
 
-  //     socket.on("weight_data", (data) => {
-  //       setSecondWeight(data.weight / 1000);
-  //       console.log(secondWeight);
-  //     });
+  //     ws.onopen = () => console.log("Connected to [FIRST] ESP32 WebSocket");
+  //     ws.onmessage = (event) => {
+  //       const data = JSON.parse(event.data);
+  //       setSecondWeight((data.weight / 1000).toFixed(3));
+  //     };
+  //     ws.onclose = () =>
+  //       console.log("Disconnected from [FIRST] ESP32 WebSocket");
 
   //     return () => {
-  //       socket.disconnect();
+  //       ws.close();
+  //       console.log("WebSocket cleaned up");
   //     };
   //   }
   // }, [id, isDataFetched, isFetchWeight]);
+
+  useEffect(() => {
+    if (
+      isDataFetched &&
+      weighingDetail.second_weight == null &&
+      isFetchWeight
+    ) {
+      const socket = io(`${process.env.NEXT_PUBLIC_API_URL}`);
+
+      socket.on("weight_data", (data) => {
+        setSecondWeight(data.weight);
+        console.log(secondWeight);
+      });
+
+      return () => {
+        socket.disconnect();
+      };
+    }
+  }, [id, isDataFetched, isFetchWeight]);
 
   const handleCaptureWeight = () => {
     if (!secondWeight) {

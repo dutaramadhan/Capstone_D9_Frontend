@@ -22,7 +22,7 @@ export default function LoginPage() {
         }
       );
 
-      localStorage.setItem("token", response.data.token);
+      sessionStorage.setItem("token", response.data.token);
       toast.success("Login Sukses!");
     } catch (err) {
       toast.error(err.response?.data?.error || "Login Gagal");
