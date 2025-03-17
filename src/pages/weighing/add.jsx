@@ -15,7 +15,6 @@ export default function AddWeighing() {
   const [supplier, setSupplier] = useState("");
   const [licensePlate, setLicensePlate] = useState("");
   const [note, setNote] = useState("");
-  const [error, setError] = useState(null);
 
   useEffect(() => {
     const token = sessionStorage.getItem("token");
@@ -36,15 +35,12 @@ export default function AddWeighing() {
           try {
             console.log("📡 Data diterima dari WebSocket:", data);
             if (data.error) {
-              setError(data.error);
               setFirstWeight(null);
             } else {
               setFirstWeight(data.weight);
-              setError(null);
             }
           } catch (error) {
             console.log("Error saat memproses data WebSocket:", error);
-            setError("Terjadi kesalahan dalam pemrosesan data.");
           }
         });
 
@@ -53,7 +49,6 @@ export default function AddWeighing() {
         };
       } catch (error) {
         console.log("Error dalam inisialisasi WebSocket:", error);
-        setError("Terjadi kesalahan saat menghubungkan ke server.");
       }
     }
   }, [isFetchedData]);
@@ -206,7 +201,7 @@ export default function AddWeighing() {
                 Berat Penimbangan Pertama
               </span>
               <span className="text-gray-800">
-                {error ? "Menunggu data..." : firstWeight + " kg"}
+                {firstWeight == null ? "Menunggu data..." : firstWeight + " kg"}
                 <button
                   onClick={handleCaptureWeight}
                   className="ml-4 px-2 py-1 bg-green-600 text-white rounded hover:bg-green-700 transition duration-300"
